@@ -1,0 +1,112 @@
+﻿@model IEnumerable<FinancialPortal.Models.Bank>
+@using FinancialPortal.Helpers;
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2 pull-right" style="margin-bottom:1em; margin-top:1em;">
+            <a href="/Banks/Create" title="Add New Account" class="btn btn-success btn-circle btn-lg pull-right" style="padding-top:13px !important;"><i class="fa fa-plus"></i></a>
+        </div>
+    </div>
+    <div class="row">
+        @{
+            int num = 0;
+            foreach (var bank in Model)
+            {
+                <div class="col-lg-4 pull-left">
+                    <div class="panel panel-success" id="balance_@num">
+                        <div class="panel-heading">
+                            <h4>
+                                @if (bank.BankType.Name == "Credit Card")
+                                {
+                                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-credit-card" title="Credit Card"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                }
+                                else if (bank.BankType.Name == "Savings Account")
+                                {
+                                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-money" title="Savings"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                }
+                                else if (bank.BankType.Name == "Checking Account")
+                                {
+                                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-check" title="Checking"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                }
+                                else if (bank.BankType.Name == "Retirement Account")
+                                {
+                                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-lock" title="Retirement"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                }
+                                else if (bank.BankType.Name == "Loan")
+                                {
+                                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-handshake-o" title="Loan"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                }
+                            </h4>
+                            @if (!bank.Include) { 
+                            <h6 style="text-align:right;"><strong>@Html.ActionLink("$" + bank.Balance + "*", "Details", new { id = bank.Id })</strong></h6>
+                            }
+                            else
+                            {
+                                <h6 style="text-align:right;"><strong>@Html.ActionLink("$" + bank.Balance, "Details", new { id = bank.Id })</strong></h6>
+                            }
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" style="margin-bottom:1em;">
+                                <div class="col-lg-12">
+                                    @bank.Description
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <a href="/Banks/Details/@bank.Id" class="btn btn-primary btn-circle" style="margin-right:.25em;" title="View Account"><i class="fa fa-search"></i></a>
+                                    <a href="/Banks/Edit/@bank.Id" class="btn btn-info btn-circle" title="Edit Account"><i class="fa fa-edit"></i></a>
+                                </div>
+                                <div class="col-lg-3 pull-right">
+                                    <a href="/Banks/Delete/@bank.Id" class="btn btn-danger btn-circle" title="Delete Account"><i class="fa fa-remove"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            Created: @Html.Raw(bank.Created.DayOfWeek + ", " + DisplayHelpers.MonthName(bank.Created.Month) + " " + bank.Created.Day + ", " + bank.Created.Year)
+                        </div>
+                    </div>
+                </div>
+                num++;
+            }
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        function bankColor(count, balance, type) {
+            if(type == "Savings Account" || type == "Checking Account" || type == "Retirement Account"){
+                if (balance <= 100 && balance > 10) {
+                    $("#balance_" + count).removeClass("panel-success")
+                    $("#balance_" + count).addClass("panel-warning")
+                }
+                if (balance <= 10) {
+                    $("#balance_" + count).removeClass("panel-success")
+                    $("#balance_" + count).addClass("panel-danger")
+                }
+            }
+            else if(type == "Credit Card" || type == "Loan"){
+            if (balance < 1000 && balance > 100) {
+                $("#balance_" + count).removeClass("panel-success")
+                $("#balance_" + count).addClass("panel-warning")
+            }
+            if (balance >= 1000) {
+                $("#balance_" + count).removeClass("panel-success")
+                $("#balance_" + count).addClass("panel-danger")
+            }
+            }
+        }
+        @{
+            int count = 0;
+            foreach (var bank in Model)
+            {
+            @:bankColor(@count,@bank.Balance, '@bank.BankType.Name');
+                    count++;
+            }
+        }
+    </script>
+
+}

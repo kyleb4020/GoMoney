@@ -1,0 +1,488 @@
+﻿@model FinancialPortal.ViewModels.HouseholdIndexVM
+@using FinancialPortal.Helpers
+@{
+    ViewBag.Title = "Household";
+}
+@*<script type="text/javascript">
+        function getUserTime(){
+            var userTime = new Date().getTimezoneOffset();
+            return userTime;
+        }
+        @{
+            int userTime =
+                @:getUserTime();
+                ;
+        }
+    </script>*@
+<div class="contain-fluid">
+    <div class="row">
+        @if (Model.Household == null)
+        {
+
+            <div class="col-lg-12">
+                <h3 class="text-danger">@ViewBag.HouseholdsError</h3>
+                @Html.ActionLink("Create New Household", "Create", null, new { @class = "btn btn-success" })
+                @Html.ActionLink("Join Existing Household", "Join", null, new { @class = "btn btn-primary" })
+            </div>
+        }
+        else
+        {
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-1 pull-right">
+                        <button type="button" title="Sent Invitations" class="btn btn-success btn-circle btn-lg" data-toggle="collapse" data-target="#invites">
+                            @if (Model.Household.Invitations.Where(i => i.Accepted == false && i.Expired == false).Count() > 0)
+                            {
+                                <span class="top-label label-invite label-danger">@Model.Household.Invitations.Where(i => i.Accepted == false && i.Expired == false).Count()</span>
+                            }
+                            <i class="fa fa-envelope"></i>
+                        </button>
+                    </div>
+                    <div class="col-lg-4 pull-right">
+                        <button href="#leave-modal" type="button" data-toggle="modal" class="btn btn-danger" style="float:right">Leave Household</button>
+                        <button href="#invite-modal" type="button" data-toggle="modal" class="btn btn-info" style="float:right; margin-right:.25em"><i class="fa fa-envelope"></i>&nbsp; Send Invite</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 pull-right collapse" id="invites">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Invitations.First().ToEmail)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Invitations.First().Created)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Invitations.First().Expiration)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Invitations.First().Accepted)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Invitations.First().GenUserId)
+                                </th>
+                            </tr>
+                            @{
+                                int num = 0;
+                                foreach (var invite in Model.Household.Invitations)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(model => invite.ToEmail)
+                                        </td>
+                                        <td id="invite_create_@num"></td>
+                                        <td id="invite_expire_@num"></td>
+                                        <td>
+                                            @Html.DisplayFor(model => invite.Accepted)
+                                        </td>
+                                        <td>
+                                            @Html.Raw(DisplayHelpers.FirstName(invite.GenUserId) + " " + DisplayHelpers.LastName(invite.GenUserId))
+                                        </td>
+                                    </tr>
+                                    num++;
+                                }
+                            }
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <h3 class="text-success">@ViewBag.Sent</h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h4>@Model.Household.Name</h4>
+                            </div>
+                            <div class="panel-body">
+                                <h5 class="heavy"><u>Members</u></h5>
+                                @foreach (var member in Model.Household.Members)
+                                {
+                                    <div class="row" style="margin-bottom:.25em;">
+                                        <div class="col-lg-3">
+                                            <img src="@Url.Action("UserPhotos", "Home",new { userId = member.Id })" class="img-responsive" alt="" />
+                                        </div>
+                                        <div class="col-lg-9 heavy">
+                                            @Html.Raw(member.FirstName + " " + member.LastName)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="panel-footer">
+                                Established: @Html.Raw(Model.Household.Created.DayOfWeek + ", " + DisplayHelpers.MonthName(Model.Household.Created.Month) + " " + Model.Household.Created.Day + ", " + Model.Household.Created.Year)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="panel panel-success" id="balance">
+                            <div class="panel-heading">
+                                <h4>Balance: $@Model.Household.Balance</h4>
+                            </div>
+                            <div class="panel-body">
+                                @foreach (var bank in Model.Household.Banks)
+                                {
+                                    <div class="row" style="margin-bottom:.25em;">
+                                        <div class="col-lg-8">
+                                            @if (bank.BankType.Name == "Credit Card")
+                                            {
+                                                <a href="/Banks/Details/@bank.Id" class="heavy"><i class="fa fa-credit-card" title="Credit Card"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                            }
+                                            else if (bank.BankType.Name == "Savings Account")
+                                            {
+                                                <a href="/Banks/Details/@bank.Id" class="heavy"><i class="fa fa-money" title="Savings"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                            }
+                                            else if (bank.BankType.Name == "Checking Account")
+                                            {
+                                                <a href="/Banks/Details/@bank.Id" class="heavy"><i class="fa fa-check" title="Checking"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                            }
+                                            else if (bank.BankType.Name == "Retirement Account")
+                                            {
+                                                <a href="/Banks/Details/@bank.Id" class="heavy"><i class="fa fa-lock" title="Retirement"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                            }
+                                            else if (bank.BankType.Name == "Loan")
+                                            {
+                                                <a href="/Banks/Details/@bank.Id" class="heavy"><i class="fa fa-handshake-o" title="Loan"></i>@Html.Raw(" " + bank.Name + ": ")</a>
+                                            }
+                                        </div>
+                                        <div class="col-lg-4" style="text-align:right">
+                                            @if (bank.BankType.Name == "Savings Account" || bank.BankType.Name == "Checking Account" || bank.BankType.Name == "Retirement Account")
+                                            {
+                                                if (bank.Balance >= 100)
+                                                {
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-success heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-success heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                                else if (bank.Balance > 10 && bank.Balance < 100)
+                                                {
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-warning heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-warning heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                                else
+                                                {
+
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-danger heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-danger heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                            }
+                                            else if (bank.BankType.Name == "Credit Card" || bank.BankType.Name == "Loan")
+                                            {
+                                                if (bank.Balance <= 100)
+                                                {
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-success heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-success heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                                else if (bank.Balance > 100 && bank.Balance < 1000)
+                                                {
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-warning heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-warning heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (!bank.Include)
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-danger heavy">@Html.Raw("$" + bank.Balance + "*")</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="/Banks/Details/@bank.Id" class="text-danger heavy">@Html.Raw("$" + bank.Balance)</a>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="panel-footer">
+                                <i class="fa fa-asterisk"></i>Not included in Household Budget
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <h4>Budget:</h4>
+                            </div>
+                            <div class="panel-body">
+                                @foreach (var budget in Model.Household.Budgets)
+                                {
+                                    <div class="row" style="margin-bottom:.25em;">
+                                        <div class="col-lg-8">
+                                            <span title="@budget.Description" class="heavy">@Html.Raw(budget.Name + ": ")</span>
+                                        </div>
+                                        <div class="col-lg-4 heavy" style="text-align:right">
+                                            @Html.Raw("$" + budget.Value)
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                            <div class="panel-footer">
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<table class="table">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Budgets.First().Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Budgets.First().Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Budgets.First().Created)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Budgets.First().Value)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Budgets.First().Expense)
+                                </th>
+                                <th></th>
+                            </tr>
+                            @{ int num2 = 0;
+                            foreach (var budget in Model.Household.Budgets)
+                                {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(model => budget.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => budget.Description)
+                                    </td>
+                                    <td id="budget_date_@num2">
+                                        @Html.Raw(DisplayHelpers.TimeZone(budget.Created, User.Identity.TimeZoneOffset())))
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => budget.Value)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => budget.Expense)
+                                    </td>
+                                </tr>
+                                num2++;
+                                }
+                            }
+                        </table>*@
+
+                    @*<table class="table">
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Banks.First().Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Banks.First().Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Banks.First().Created)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Household.Banks.First().Balance)
+                                </th>
+                                <th>
+                                    @Html.Label("Transactions")
+                                </th>
+                                <th></th>
+                            </tr>
+                            @foreach (var bank in Model.Household.Banks)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(model => bank.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => bank.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => bank.Created)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => bank.Balance)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(model => bank.Transactions.Count())
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>*@
+                </div>
+            </div>
+                                }
+    </div>
+</div>
+
+@if (Model.Household != null)
+{
+    @*Leave Modal*@
+    <div class="modal fade" id="leave-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="container modal-dialog">
+            <div class="row">
+                <div class="col-lg-1 pull-right">
+                    <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="login-panel panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Are you sure you want to leave this household?</h3>
+                        </div>
+                        <div class="panel-body">
+                            @using (Html.BeginForm("Leave", "Households", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" value="@Model.Household.Id" name="HouseholdId" />
+                                <input type="submit" value="Leave Household" class="btn btn-danger btn-block" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Invite Modal*@
+    <div class="modal fade" id="invite-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="container modal-dialog">
+            <div class="row">
+                <div class="col-lg-1 pull-right">
+                    <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="login-panel panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Invite Someone to Join Your Household!</h3>
+                        </div>
+                        <div class="panel-body">
+                            @using (Html.BeginForm("Invite", "Households", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <fieldset>
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <input type="hidden" value="@Model.Household.Id" name="HouseholdId" />
+                                    <div class="form-group">
+                                        @Html.LabelFor(m => m.Email.ToName, "Recipient's Name", htmlAttributes: new { @class = "control-label" })
+                                        <input class="form-control text-box single-line" data-val="true" data-val-required="The Name field is required." id="ToName" name="ToName" placeholder="Recipient's Name" type="text" value="" autofocus>
+                                        @*@Html.EditorFor(model => model.Email.ToName, new { htmlAttributes = new { @class = "form-control", placeholder = "Recipient's Name" } })*@
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Recipient's Email Address</label>
+                                        <input class="form-control" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="ToEmail" placeholder="Recipient's E-mail" name="ToEmail" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Invitation Message</label>
+                                        <textarea class="form-control tiny-mce" placeholder="Type an invitation message here" id="Body" name="Body"></textarea>
+                                        @*@Html.TextAreaFor(m => m.Email.Body,new { @class="form-control", placeholder= "Type an invitation message here" })*@
+                                    </div>
+                                    <!-- Change this to a button or input when using this as a form -->
+                                    <input type="submit" value="Send Invite" class="btn btn-info btn-block" />
+                                </fieldset>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
+    <script src="~/Scripts/tinymce/jquery.tinymce.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            function bankColor(balance) {
+                if (balance <= 100 && balance > 10) {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-warning")
+                }
+                if (balance <= 10) {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-danger")
+                }
+            }
+            function inviteDate(count, created, expired) {
+                var time1 = getUserTime(created);
+                $("#invite_create_" + count).html(time1);
+                var time2 = getUserTime(expired);
+                $("#invite_expire_" + count).html(time2);
+            }
+            function budgetDate(count, created){
+                var time = getUserTime(created);
+                $("#budget_date_"+count).html(time);
+            }
+            @{
+                if (Model.Household != null)
+                {
+                @:bankColor(@Model.Household.Balance);
+
+                    int count = 0;
+                    foreach (var invite in Model.Household.Invitations)
+                    {
+                    @:inviteDate(@count,'@invite.Created.ToUniversalTime().ToString()', '@invite.Expiration.Value.ToUniversalTime().ToString()')
+                                                                                                        count++;
+                    }
+
+                    count = 0;
+                    foreach (var budget in Model.Household.Budgets)
+                    {
+                    @:budgetDate(@count,'@budget.Created.ToUniversalTime().ToString()')
+                                                                                            count++;
+                    }
+                }
+            }
+
+
+            $(function () {
+                tinymce.init({
+                    selector: '.tiny-mce'
+                });
+            });
+        });
+    </script>
+}

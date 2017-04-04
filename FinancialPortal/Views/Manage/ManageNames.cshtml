@@ -1,0 +1,63 @@
+﻿@model FinancialPortal.Models.ApplicationUser
+@{
+    ViewBag.Title = "Manage Profile";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4">
+            <h2>@ViewBag.Title.</h2>
+            @using (Html.BeginForm("ManageNames", "Manage", FormMethod.Post, new { enctype = "Multipart/form-data", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <h4>Change/Add your Names</h4>
+                <hr />
+                <fieldset>
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FirstName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.LastName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.DisplayName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.DisplayName, new { @class = "form-control", placeholder = "Display Name" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Current Profile Picture</label>
+                            <img src="@Url.Action("UserPhotos","Home")" class="img-responsive" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProfilePic, new { @class = "control-label" })
+                            <input name="UserPhoto" type="file" class="form-control" id="fileUpload" accept=".png,.jpg,.jpeg,.gif,.tif" />
+                        </div>
+                    </div>
+                    <!-- Change this to a button or input when using this as a form -->
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                </fieldset>
+            }
+        </div>
+    </div>
+    <div class="row" style="margin-top:1em;">
+        <div class="col-lg-2">
+            <a href="/Manage/Index" title="Return to User Profile" class="btn btn-default btn-circle btn-lg"><i class="fa fa-arrow-left"></i></a>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

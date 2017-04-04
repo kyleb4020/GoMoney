@@ -1,0 +1,55 @@
+﻿@model FinancialPortal.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4 text-center logo-margin ">
+        <img src="~/img/Go_Money_Arrow.png" alt="" class="img-responsive" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="login-panel panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Create an Account</h3>
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { enctype = "Multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <input class="form-control" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Email" placeholder="E-mail" name="Email" type="text" autofocus>
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", placeholder = "First Name" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", placeholder = "Last Name" })
+                        </div>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.DisplayName, new { @class = "form-control", placeholder = "Display Name" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ProfilePic, new { @class = "control-label" })
+                            <input name="UserPhoto" type="file" class="form-control" id="fileUpload" accept=".png,.jpg,.jpeg,.gif,.tif" />
+                        </div>
+                        <div class="form-group">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
+                        </div>
+                        <div class="form-group">
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm Password" })
+                        </div>
+                        <input type="submit" value="Register" class="btn btn-success btn-block" />
+                    </fieldset>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,39 @@
+﻿@model FinancialPortal.Models.Household
+
+@if(Model != null)
+{
+<li>
+    <a href="#"><i class="fa fa-money fa-fw"></i> Accounts<span class="fa arrow"></span></a>
+    <ul class="nav nav-second-level">
+        <li>
+            <a href="/Banks/Index"><i class="fa fa-bank fa-fw"></i> &nbsp; All Accounts: $@Model.Balance</a>
+        </li>
+        @foreach (var bank in Model.Banks)
+        {
+            <li>
+                @if (bank.BankType.Name == "Credit Card")
+                {
+                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-credit-card" title="Credit Card"></i>@Html.Raw(" " + bank.Name + ": $" + bank.Balance)</a>
+                }
+                else if (bank.BankType.Name == "Savings Account")
+                {
+                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-money" title="Savings"></i>@Html.Raw(" " + bank.Name + ": $" + bank.Balance)</a>
+                }
+                else if (bank.BankType.Name == "Checking Account")
+                {
+                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-check" title="Checking"></i>@Html.Raw(" " + bank.Name + ": $" + bank.Balance)</a>
+                }
+                else if (bank.BankType.Name == "Retirement Account")
+                {
+                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-lock" title="Retirement"></i>@Html.Raw(" " + bank.Name + ": $" + bank.Balance)</a>
+                }
+                else if (bank.BankType.Name == "Loan")
+                {
+                    <a href="/Banks/Details/@bank.Id"><i class="fa fa-handshake-o" title="Loan"></i>@Html.Raw(" " + bank.Name + ": $" + bank.Balance)</a>
+                }
+            </li>
+        }
+    </ul>
+    <!-- second-level-items -->
+</li>
+}

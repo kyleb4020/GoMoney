@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Join";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Join a Household</h3>
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("Join", "Households", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <fieldset>
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                <input class="form-control" data-val="true" data-val-email="The Email field is not a valid e-mail address." data-val-required="The Email field is required." id="Email" placeholder="Invitation Recipient's E-mail" name="Email" type="text">
+                            </div>
+                            <div class="form-group">
+                                @Html.Password("Password",null, new { @class = "form-control", placeholder = "Password" })
+                            </div>
+                            <!-- Change this to a button or input when using this as a form -->
+                            <input type="submit" value="Join House" class="btn btn-success btn-block" />
+                        </fieldset>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

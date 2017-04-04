@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title Go Money</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="icon" type="image/png" href="~/img/GM_favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="~/img/GM_favicon-16x16.png" sizes="16x16" />
+
+</head>
+<body class="body-Login-back">
+        <div class="container">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year GO<i class="fa fa-arrow-left"></i> MONEY</p>
+            </footer>
+        </div>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+</body>
+</html>

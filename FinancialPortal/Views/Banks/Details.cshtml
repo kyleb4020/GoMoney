@@ -1,0 +1,321 @@
+﻿@model FinancialPortal.ViewModels.BankDetailsVM
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-1">
+            <div class="row">
+                <div class="col-lg-12">
+                    <a href="/Banks/Edit/@Model.Bank.Id" class="btn btn-info btn-circle" title="Edit Account"><i class="fa fa-edit"></i></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button href="#transaction-modal" type="button" data-toggle="modal" title="Add Transaction" class="btn btn-success btn-circle"><i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h2>@Model.Bank.Name</h2>
+        </div>
+        <div class="col-lg-2">
+            <h2 id="balance">$@Model.Bank.Balance</h2>
+        </div>
+        <div class="col-lg-2">
+            @if (Model.Bank.ReconciledBalance != null)
+            {
+                <h2 id="reconciled">$@Model.Bank.ReconciledBalance</h2>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-11 col-lg-offset-1">
+            <h6>@Model.Bank.Description</h6>
+            <p class="pull-right" id="created_date"></p>
+            @if (Model.Bank.Updated != null)
+            {
+                <p class="pull-right" id="udated_date"></p>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h3>Transactions</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table" id="bank_transactions" width="100%">
+                <thead>
+                    <tr>
+                        <th>
+                            Bank Name
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Category.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Type.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Value)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Created)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Updated)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Expense)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Reconciled)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().ReconciledValue)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Submitter)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Editor)
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Model.Bank.Transactions.Where(t=>t.Void == false))
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Bank.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Category.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Type.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Value)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Created)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Updated)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Expense)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Reconciled)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ReconciledValue)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Submitter)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Editor)
+                            </td>
+                            <td>
+                                <a href="/Transactions/Edit/@item.Id" class="btn btn-info btn-circle" title="Edit Transaction"><i class="fa fa-edit"></i></a>
+                                <a href="/Transactions/Delete/@item.Id" class="btn btn-danger btn-circle" title="Delete Transaction"><i class="fa fa-close"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@*<h2>Details</h2>
+
+<div>
+    <h4>Bank</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Household.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Household.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Balance)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Balance)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Created)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Created)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Updated)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Updated)
+        </dd>
+
+    </dl>
+</div>*@
+<p>
+    <a href="/Banks/Index" title="Back to Accounts" class="btn btn-default btn-circle btn-lg" style="padding-top:13px !important;"><i class="fa fa-arrow-left"></i></a>
+</p>
+
+
+@*Transactions Modal*@
+<div class="modal fade" id="transaction-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Add a Transaction</h3>
+                    </div>
+                    <div class="panel-body">
+                        @using (Html.BeginForm("Create", "Transactions", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <fieldset>
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <input type="hidden" value="@Model.Bank.Id" name="Transaction.BankId" />
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Name, "Transaction Title", htmlAttributes: new { @class = "control-label" })
+                                    <input class="form-control text-box single-line" data-val="true" data-val-required="The Title field is required." id="Transaction_Name" name="Transaction.Name" placeholder="Transaction Title" type="text" value="" autofocus>
+                                    @*@Html.EditorFor(model => model.Email.ToName, new { htmlAttributes = new { @class = "form-control", placeholder = "Recipient's Name" } })*@
+                                    @Html.ValidationMessageFor(model => model.Transaction.Name, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Transaction.Description, "Transaction Description", htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Transaction.Description, new { htmlAttributes = new { @class = "form-control", placeholder="Transaction Description" } })
+                                    @Html.ValidationMessageFor(model => model.Transaction.Description, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Transaction.Value, htmlAttributes: new { @class = "control-label" })
+                                    <input class="form-control" placeholder="Amount" type="number" step="0.01" name="Transaction.Value" id="Transaction_Value" required />
+                                    @Html.ValidationMessageFor(model => model.Transaction.Value, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input data-val="true" data-val-required="The Include field is required." id="Transaction_Expense" name="Transaction.Expense" type="checkbox" value="true" checked>
+                                        Is this an Expense? (e.g. Is money leaving this account?)
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Transaction.CategoryId, "Category", htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownList("CategoryId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Transaction.CategoryId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Transaction.TypeId, "Transaction Type", htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownList("TypeId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Transaction.TypeId, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input name="Connected" type="hidden" value="false" />
+                                        <input data-val="true" id="Connected" name="Connected" type="checkbox" value="true" />
+                                    Is this transaction a tranfer?<br />(i.e. Are you moving money from one account to another?)
+                                    </label>
+                                    </div>
+                                <div class="form-group">
+                                    <label class="control-label">Other Account Involved in Transfer:</label>
+                                    @Html.DropDownList("OtherBankId", null, htmlAttributes: new { @class = "form-control", @disabled = "disabled" })
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <input type="submit" value="Add Transaction" class="btn btn-info btn-block" />
+                            </fieldset>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#bank_transactions").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                    'colvis'
+                ],
+                responsive: true
+            });
+
+            $("#Connected").change(function() {
+                if ($(this).is(":checked")) {
+                    $(this).attr("value", "true")
+                    $("#OtherBankId").prop('disabled', false)
+                }
+                else {
+                    $(this).attr("value", "false")
+                    $("#OtherBankId").prop('disabled', "disabled")
+                }
+        });
+    });
+</script>
+    }
