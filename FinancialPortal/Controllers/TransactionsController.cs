@@ -133,18 +133,42 @@ namespace FinancialPortal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description,Value,Created,Updated,Expense,Reconciled,ReconciledValue,Submitter,Editor,BankId,CategoryId,TypeId")] Transaction transaction)
+        public ActionResult Edit([Bind(Include = "Id,Name,Description,Value,Created,Updated,Expense,Reconciled,ReconciledValue,Submitter,Editor,BankId,CategoryId,TypeId")] Transaction transaction, int EditCategoryId, int EditTypeId)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(transaction).State = EntityState.Modified;
+                //Update Ticket
+                var Trans = db.Transactions.Find(transaction.Id);
+                Trans.Name = transaction.Name;
+                Trans.Description = transaction.Description;
+                Trans.Value = transaction.Value;
+                Trans.Updated = DateTimeOffset.UtcNow;
+                Trans.Expense = transaction.Expense;
+                Trans.Reconciled = transaction.Reconciled;
+                Trans.ReconciledValue = transaction.ReconciledValue;
+                Trans.Editor = User.Identity.GetUserId();
+                Trans.Category = db.Categories.Find(EditCategoryId);
+                Trans.Type = db.TransTypes.Find(EditTypeId);
+                db.Entry(Trans).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+
+                //Calculate New Bank Totals
+                var bank1 = db.Banks.Find(Trans.BankId);
+                bank1.Balance = bh.TotalAllTrans(bank1);
+
+                db.Entry(bank1).State = EntityState.Modified;
+
+                //Update Household Total
+                var household = bank1.Household;
+                household.Balance = hh.HouseholdBalance(household);
+
+                db.Entry(household).State = EntityState.Modified;
+
+                db.SaveChanges();
+                return RedirectToAction("Details", "Banks", new { id = bank1.Id });
             }
-            ViewBag.BankId = new SelectList(db.Banks, "Id", "Name", transaction.BankId);
-            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", transaction.CategoryId);
-            ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name", transaction.TypeId);
-            return View(transaction);
+
+            return RedirectToAction("Details", "Banks", new { id = transaction.BankId });
         }
 
         // GET: Transactions/Delete/5

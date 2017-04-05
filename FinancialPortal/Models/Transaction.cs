@@ -19,6 +19,7 @@ namespace FinancialPortal.Models
         public bool Expense { get; set; }
         public bool Reconciled { get; set; }
         public bool Void { get; set; }
+        [Display(Name = "Reconciled Amount")]
         public double ReconciledValue { get; set; }
         public string Submitter { get; set; }
         public string Editor { get; set; }

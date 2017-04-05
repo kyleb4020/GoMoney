@@ -20,7 +20,7 @@
     if (seconds < 10) {
         seconds = "0" + seconds;
     }
-    var correctTime = (userTime.getMonth() + 1) + "/" + (userTime.getDate()) + "/" + userTime.getFullYear() + " " + hours + ":" + minutes + ":" + seconds + " " + ampm
+    var correctTime = (userTime.getMonth() + 1).valueOf() + "/" + (userTime.getDate()).valueOf() + "/" + userTime.getFullYear().valueOf() + " " + hours.valueOf() + ":" + minutes + ":" + seconds + " " + ampm
     return (correctTime)
 }
 

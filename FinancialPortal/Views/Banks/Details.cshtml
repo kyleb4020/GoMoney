@@ -1,5 +1,5 @@
 ﻿@model FinancialPortal.ViewModels.BankDetailsVM
-
+@using FinancialPortal.Helpers;
 @{
     ViewBag.Title = "Details";
 }
@@ -57,15 +57,6 @@
                 <thead>
                     <tr>
                         <th>
-                            Bank Name
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Category.Name)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Type.Name)
-                        </th>
-                        <th>
                             @Html.DisplayNameFor(model => model.Bank.Transactions.First().Name)
                         </th>
                         <th>
@@ -81,19 +72,16 @@
                             @Html.DisplayNameFor(model => model.Bank.Transactions.First().Updated)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Expense)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Reconciled)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().ReconciledValue)
-                        </th>
-                        <th>
                             @Html.DisplayNameFor(model => model.Bank.Transactions.First().Submitter)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Bank.Transactions.First().Editor)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Category.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Bank.Transactions.First().Type.Name)
                         </th>
                         <th>
                         </th>
@@ -106,43 +94,67 @@
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Bank.Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Category.Name)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Type.Name)
-                                </td>
-                                <td>
                                     @Html.DisplayFor(modelItem => item.Name)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Description)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Value)
+                                    @if (!item.Expense)
+                                    {
+                                        <span class="text-success heavy">
+                                            @if (item.Reconciled)
+                                            {
+                                                @:+$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("+$" + item.Value)
+                                            }
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger heavy" title="Expense">
+                                            @if (item.Reconciled)
+                                            {
+                                                @:-$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("-$" + item.Value)
+                                            }
+                                        </span>
+                                    }
+                                    
+                                </td>
+                                <td id="transaction_create_@num">
+                                    <span style="display:none">
+                                        @item.Created
+                                    </span>
+                                </td>
+                                <td id="transaction_update_@num">
+                                    @if(item.Updated != null)
+                                    {
+                                    <span style="display:none">
+                                        @item.Updated       
+                                    </span>
+                                    }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Created)
+                                    @Html.Raw(DisplayHelpers.FirstName(item.Submitter) + " " + DisplayHelpers.LastName(item.Submitter))
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Updated)
+                                    @if(item.Editor != null)
+                                    {
+                                    @Html.Raw(DisplayHelpers.FirstName(item.Editor) + " " + DisplayHelpers.LastName(item.Editor))
+                                    }
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Expense)
+                                    @Html.DisplayFor(modelItem => item.Category.Name)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Reconciled)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ReconciledValue)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Submitter)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Editor)
+                                    @Html.DisplayFor(modelItem => item.Type.Name)
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-circle" id="edit_trans_@num" title="Edit Transaction"><i class="fa fa-edit"></i></button>
@@ -320,6 +332,7 @@
                             <fieldset>
                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                 <input type="hidden" value="" id="edit_transaction_id" name="Transaction.Id" />
+                                <input type="hidden" value="@Model.Bank.Id" id="edit_transaction_bankId" name="Transaction.BankId" />
                                 <div class="form-group">
                                     @Html.LabelFor(model => model.Transaction.Name, htmlAttributes: new { @class = "control-label col-md-2" })
                                     <input class="form-control text-box single-line" data-val="true" data-val-required="The Title field is required." id="edit_transaction_name" name="Transaction.Name" placeholder="Transaction Title" type="text" value="" autofocus>
@@ -348,7 +361,7 @@
                                     </label>
                                 </div>
                                 <div class="form-group">
-                                    @Html.LabelFor(model => model.Transaction.ReconciledValue,"Reconciled Amount", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    @Html.LabelFor(model => model.Transaction.ReconciledValue, "Reconciled Amount", htmlAttributes: new { @class = "control-label col-md-2" })
                                     <input class="form-control" placeholder="Reconciled Amount" type="number" step="0.01" name="Transaction.ReconciledValue" id="edit_transaction_reconciledvalue" disabled>
                                     @Html.ValidationMessageFor(model => model.Transaction.ReconciledValue, "", new { @class = "text-danger" })
                                 </div>
@@ -386,43 +399,67 @@
                 buttons: [
                     'colvis'
                 ],
+                "order": [[ 3, "desc" ]],
                 responsive: true
             });
 
+            function transColor(expense) {
+                if (expense == "True") {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-warning")
+                }
+                else {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-danger")
+                }
+            }
+            function transDate2(count, created, updated) {
+                var time1 = getUserTime(created);
+                $("#transaction_create_" + count).append(time1);
+                var time2 = getUserTime(updated);
+                $("#transaction_update_" + count).append(time2);
+            }
+            function transDate(count, created) {
+                var time1 = getUserTime(created);
+                $("#transaction_create_" + count).append(time1);
+            }
             @{
                 int count = 0;
                 foreach(var transaction in Model.Bank.Transactions)
                 {
                     <text>
-                    $(document).on('click','#edit_trans_@count',function(){
-                        $("#edit-trans-modal").modal("show");
-                        $("#edit_transaction_id").val(@transaction.Id);
-                        $("#edit_transaction_name").val('@transaction.Name');
-                        $("#edit_transaction_description").val('@transaction.Description');
-                        $("#edit_transaction_value").val(@transaction.Value);
-                        if ('@transaction.Expense' == "True")
-                        {
-                        $("#edit_transaction_expense").attr("checked", checked);
-                        }
-                        else
-                        {
-                        $("#edit_transaction_expense").attr("checked", false);
-                        }
-                        if ('@transaction.Reconciled' == "True")
-                        {
-                            $("#edit_transaction_reconciled").attr("checked", checked);
-                            $("#edit_transaction_reconciledvalue").prop('disabled', false)
-                        }
-                        else
-                        {
-                        $("#edit_transaction_reconciled").attr("checked", false);
-                        }
-                        $("#edit_transaction_reconciledvalue").val(@transaction.ReconciledValue);
-                        $("#EditCategoryId").val(@transaction.CategoryId);
-                        $("#EditTypeId").val(@transaction.TypeId);
-                    });
-
-                    </text>
+            $(document).on('click', '#edit_trans_@count', function () {
+                $("#edit-trans-modal").modal("show");
+                $("#edit_transaction_id").val(@transaction.Id);
+                $("#edit_transaction_name").val('@transaction.Name');
+                $("#edit_transaction_description").val('@transaction.Description');
+                $("#edit_transaction_value").val(@transaction.Value);
+                if ('@transaction.Expense' == "True") {
+                    $("#edit_transaction_expense").prop("checked", true);
+                }
+                else {
+                    $("#edit_transaction_expense").prop("checked", false);
+                }
+                if ('@transaction.Reconciled' == "True") {
+                    $("#edit_transaction_reconciled").prop("checked", true);
+                    $("#edit_transaction_reconciledvalue").prop('disabled', false)
+                }
+                else {
+                    $("#edit_transaction_reconciled").attr("checked", false);
+                }
+                $("#edit_transaction_reconciledvalue").val(@transaction.ReconciledValue);
+                $("#EditCategoryId").val(@transaction.CategoryId);
+                $("#EditTypeId").val(@transaction.TypeId);
+            });
+            @if(transaction.Updated != null)
+            {
+                @:transDate2(@count,'@transaction.Created.ToUniversalTime().ToString()', '@transaction.Updated.Value.ToUniversalTime().ToString()')
+            }
+            else
+            {
+                @:transDate(@count,'@transaction.Created.ToUniversalTime().ToString()')
+            }
+            </text>
                     count++;
                 }
             }
