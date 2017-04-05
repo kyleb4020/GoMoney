@@ -43,6 +43,8 @@ namespace FinancialPortal.Controllers
             ViewBag.OtherBankId = new SelectList(db.Banks, "Id", "Name");
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
             ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name");
+            ViewBag.EditCategoryId = new SelectList(db.Categories, "Id", "Name");
+            ViewBag.EditTypeId = new SelectList(db.TransTypes, "Id", "Name");
             return View(VM);
         }
 

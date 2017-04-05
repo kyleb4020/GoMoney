@@ -74,8 +74,8 @@ namespace FinancialPortal.Controllers
                     connectedTrans.Value = transaction.Value;
                     connectedTrans.Expense = !transaction.Expense;
                     connectedTrans.BankId = Convert.ToInt32(OtherBankId);
-                    connectedTrans.CategoryId = CategoryId;
-                    connectedTrans.TypeId = TypeId;
+                    connectedTrans.Category = db.Categories.Find(CategoryId);
+                    connectedTrans.Type = db.TransTypes.Find(TypeId);
                     connectedTrans.Created = DateTimeOffset.UtcNow;
                     connectedTrans.Submitter = User.Identity.GetUserId();
                     db.Transactions.Add(connectedTrans);
