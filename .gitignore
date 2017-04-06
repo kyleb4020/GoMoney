@@ -321,7 +321,6 @@ __pycache__/
 *.xsd.cs
 
 private.config
-FinancialPortal/[Ww]eb.config
 FinancialPortal/[Ww]eb.[Dd]ebug.config
 FinancialPortal/[Ww]eb.[Rr]elease.config
 
