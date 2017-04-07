@@ -227,7 +227,7 @@
                     </ul>
                     <!-- end dropdown-alerts -->
                 </li>*@
-
+                @{Html.RenderAction("_Categories","Households"); }
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-3x"></i>
@@ -283,10 +283,7 @@
                     <li id="house-nav">
                         <a href="/Households/Index"><i class="fa fa-home fa-fw"></i>&nbsp;Household</a>
                     </li>
-                    @{Html.RenderAction("_Banks", "Households",false);}
-                    <li>
-                        <a href="/Transactions/Index" title="View All Transactions"><i class="fa fa-shopping-basket fa-fw"></i>&nbsp;Transactions</a>
-                    </li>
+                    @{Html.RenderAction("_Banks", "Households",false);}                    
                     @*<li>
                         <a href="tables.html"><i class="fa fa-table fa-fw"></i>Tables</a>
                     </li>*@

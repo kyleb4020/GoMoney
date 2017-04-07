@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using FinancialPortal.Models;
 using FinancialPortal.Helpers;
 using Microsoft.AspNet.Identity;
+using FinancialPortal.ViewModels;
 
 namespace FinancialPortal.Controllers
 {
@@ -22,8 +23,16 @@ namespace FinancialPortal.Controllers
         public ActionResult Index()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
-            var transactions = db.Transactions.Where(t => t.Bank.Household == user.Household).Include(t => t.Bank).Include(t => t.Category).Include(t => t.Type);
-            return View(transactions.ToList());
+            var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b=>b.Transactions.Where(t=>t.Void == false));
+            ViewBag.OtherBankId = new SelectList(db.Banks, "Id", "Name");
+            ViewBag.BankId = new SelectList(db.Banks, "Id", "Name");
+            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
+            ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name");
+            ViewBag.EditCategoryId = new SelectList(db.Categories, "Id", "Name");
+            ViewBag.EditTypeId = new SelectList(db.TransTypes, "Id", "Name");
+            TransactionIndexVM VM = new TransactionIndexVM();
+            VM.AllTrans = transactions.ToList();
+            return View(VM);
         }
 
         // GET: Transactions/Details/5
@@ -44,7 +53,7 @@ namespace FinancialPortal.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            ViewBag.OtherBankId = new SelectList(db.Banks, "Id", "Name");
+            ViewBag.BankId = new SelectList(db.Banks, "Id", "Name");
             ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
             ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name");
             return View();
@@ -189,12 +198,39 @@ namespace FinancialPortal.Controllers
         // POST: Transactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, int? bankId)
         {
             Transaction transaction = db.Transactions.Find(id);
-            db.Transactions.Remove(transaction);
+            transaction.Void = true;
             db.SaveChanges();
-            return RedirectToAction("Index");
+            if(bankId != null)
+            {
+                return RedirectToAction("Details", "Banks", new { id = bankId });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Transactions");
+            }
+        }
+
+        //GET Transactions/Voided
+        public ActionResult Voided()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b => b.Transactions.Where(t => t.Void));
+
+            return View(transactions);
+        }
+
+        //POST: Transactions/Voided/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Voided(int id)
+        {
+            Transaction transaction = db.Transactions.Find(id);
+            transaction.Void = false;
+            db.SaveChanges();
+            return RedirectToAction("Voided", "Transactions");
         }
 
         protected override void Dispose(bool disposing)

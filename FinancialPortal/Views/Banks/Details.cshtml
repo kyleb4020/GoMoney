@@ -158,7 +158,7 @@
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-circle" id="edit_trans_@num" title="Edit Transaction"><i class="fa fa-edit"></i></button>
-                                    <a href="/Transactions/Delete/@item.Id" class="btn btn-danger btn-circle" title="Delete Transaction"><i class="fa fa-close"></i></a>
+                                    <button type="button" class="btn btn-danger btn-circle" id="delete_trans_@num" title="Delete Transaction"><i class="fa fa-close"></i></button>
                                 </td>
                             </tr>
                             num++;
@@ -168,70 +168,18 @@
             </table>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <p>
+                <a href="/Banks/Index" title="Back to Accounts" class="btn btn-default btn-circle btn-lg" style="padding-top:13px !important;"><i class="fa fa-arrow-left"></i></a>
+            </p>
+        </div>
+    </div>
 </div>
 
-@*<h2>Details</h2>
-
-    <div>
-        <h4>Bank</h4>
-        <hr />
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Household.Name)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Household.Name)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Description)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Description)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Balance)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Balance)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Created)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Created)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Updated)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Updated)
-            </dd>
-
-        </dl>
-    </div>*@
-<p>
-    <a href="/Banks/Index" title="Back to Accounts" class="btn btn-default btn-circle btn-lg" style="padding-top:13px !important;"><i class="fa fa-arrow-left"></i></a>
-</p>
 
 
-@*Transactions Modal*@
+@*Create Transactions Modal*@
 <div class="modal fade" id="transaction-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="container modal-dialog">
         <div class="row">
@@ -311,7 +259,7 @@
     </div>
 </div>
 
-@*Transactions Modal*@
+@*Edit Transactions Modal*@
 <div class="modal fade" id="edit-trans-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="container modal-dialog">
         <div class="row">
@@ -323,7 +271,7 @@
             <div class="col-md-12">
                 <div class="login-panel panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Add a Transaction</h3>
+                        <h3 class="panel-title">Edit Transaction</h3>
                     </div>
                     <div class="panel-body">
                         @using (Html.BeginForm("Edit", "Transactions", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
@@ -390,6 +338,61 @@
     </div>
 </div>
 
+@*Delete Transaction Modal*@
+<div class="modal fade" id="delete-trans-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Delete Transaction?</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h3  id="delete_trans_name"></h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" id="delete_trans_description">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 id="delete_trans_value"></h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @using (Html.BeginForm("Delete", "Transactions", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <fieldset>
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <input type="hidden" value="" id="delete_trans_id" name="Id" />
+                                        <input type="hidden" value="@Model.Bank.Id" id="bankId" name="bankId" />
+                                        <input type="submit" value="Delete Transaction" class="btn btn-danger btn-block" />
+                                    </fieldset>
+                                }
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts{
     <script type="text/javascript">
@@ -425,39 +428,59 @@
             }
             @{
                 int count = 0;
-                foreach(var transaction in Model.Bank.Transactions)
+                foreach(var transaction in Model.Bank.Transactions.Where(t=>t.Void==false))
                 {
                     <text>
+            $(document).on('click', '#delete_trans_@count', function () {
+                $("#delete-trans-modal").modal("show");
+                $("#delete_trans_id").val(@transaction.Id);
+                $("#delete_trans_name").html('@transaction.Name');
+                $("#delete_trans_description").html('@transaction.Description');
+                if ('@transaction.Expense' == "True") {
+                    $("#delete_trans_value").html("-$"+@transaction.Value);
+                    $("#delete_trans_value").addClass("text-danger");
+                }
+                else {
+                    $("#delete_trans_value").html("+$"+@transaction.Value);
+                    $("#delete_trans_value").addClass("text-success");
+                }
+            });
+
             $(document).on('click', '#edit_trans_@count', function () {
                 $("#edit-trans-modal").modal("show");
                 $("#edit_transaction_id").val(@transaction.Id);
                 $("#edit_transaction_name").val('@transaction.Name');
                 $("#edit_transaction_description").val('@transaction.Description');
                 $("#edit_transaction_value").val(@transaction.Value);
-                if ('@transaction.Expense' == "True") {
+                if ('@transaction.Expense' == "True") 
+                {
                     $("#edit_transaction_expense").prop("checked", true);
                 }
-                else {
+                else 
+                {
                     $("#edit_transaction_expense").prop("checked", false);
                 }
-                if ('@transaction.Reconciled' == "True") {
+                if ('@transaction.Reconciled' == "True") 
+                {
                     $("#edit_transaction_reconciled").prop("checked", true);
                     $("#edit_transaction_reconciledvalue").prop('disabled', false)
                 }
-                else {
+                else 
+                {
                     $("#edit_transaction_reconciled").attr("checked", false);
                 }
                 $("#edit_transaction_reconciledvalue").val(@transaction.ReconciledValue);
                 $("#EditCategoryId").val(@transaction.CategoryId);
                 $("#EditTypeId").val(@transaction.TypeId);
             });
+
             @if(transaction.Updated != null)
             {
-                @:transDate2(@count,'@transaction.Created.ToUniversalTime().ToString()', '@transaction.Updated.Value.ToUniversalTime().ToString()')
+                @:transDate2(@count,'@transaction.Created.ToUniversalTime().ToString()', '@transaction.Updated.Value.ToUniversalTime().ToString()');
             }
             else
             {
-                @:transDate(@count,'@transaction.Created.ToUniversalTime().ToString()')
+                @:transDate(@count,'@transaction.Created.ToUniversalTime().ToString()');
             }
             </text>
                     count++;

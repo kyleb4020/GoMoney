@@ -11,17 +11,20 @@ namespace FinancialPortal.Models
         public Category()
         {
             this.Transactions = new HashSet<Transaction>();
+            this.Households = new HashSet<Household>();
+            this.Budgets = new HashSet<Budget>();
         }
 
         public int Id { get; set; }
         [Display(Name = "Category")]
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool Default { get; set; }
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
-        public int? BudgetId { get; set; }
 
+        public virtual ICollection<Household> Households { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
-        public virtual Budget Budget { get; set; }
+        public virtual ICollection<Budget> Budgets { get; set; }
     }
 }

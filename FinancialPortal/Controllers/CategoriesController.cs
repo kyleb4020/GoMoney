@@ -7,6 +7,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using FinancialPortal.Models;
+using Microsoft.AspNet.Identity;
+using FinancialPortal.ViewModels;
 
 namespace FinancialPortal.Controllers
 {
@@ -17,8 +19,12 @@ namespace FinancialPortal.Controllers
         // GET: Categories
         public ActionResult Index()
         {
-            var categories = db.Categories.Include(c => c.Budget);
-            return View(categories.ToList());
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var categories = db.Households.Find(user.HouseholdId).Categories.ToList();
+            CategoriesIndexVM VM = new CategoriesIndexVM();
+            VM.Categories = categories;
+            VM.HouseholdId = Convert.ToInt32(user.HouseholdId);
+            return View(VM);
         }
 
         // GET: Categories/Details/5

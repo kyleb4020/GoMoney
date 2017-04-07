@@ -1,0 +1,270 @@
+﻿@model IEnumerable<FinancialPortal.Models.Transaction>
+@using FinancialPortal.Helpers;
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2>Deleted Transactions</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table" id="transactions" width="100%">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Bank.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Value)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Created)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Updated)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Submitter)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Editor)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Category.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.First().Type.Name)
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int num = 0;
+                        foreach (var item in Model.Where(t => t.Void))
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Bank.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    @if (!item.Expense)
+                                    {
+                                        <span class="text-success heavy">
+                                            @if (item.Reconciled)
+                                            {
+                                                @:+$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("+$" + item.Value)
+                                            }
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger heavy" title="Expense">
+                                            @if (item.Reconciled)
+                                            {
+                                                @:-$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("-$" + item.Value)
+                                            }
+                                        </span>
+                                    }
+
+                                </td>
+                                <td id="transaction_create_@num">
+                                    <span style="display:none">
+                                        @item.Created
+                                    </span>
+                                </td>
+                                <td id="transaction_update_@num">
+                                    @if (item.Updated != null)
+                                    {
+                                        <span style="display:none">
+                                            @item.Updated
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.Raw(DisplayHelpers.FirstName(item.Submitter) + " " + DisplayHelpers.LastName(item.Submitter))
+                                </td>
+                                <td>
+                                    @if (item.Editor != null)
+                                    {
+                                        @Html.Raw(DisplayHelpers.FirstName(item.Editor) + " " + DisplayHelpers.LastName(item.Editor))
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Category.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Type.Name)
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-circle" id="undelete_trans_@num" title="Undelete Transaction"><i class="fa fa-undo"></i></button>
+                                </td>
+                            </tr>
+                            num++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <p>
+                <a href="/Transactions/Index" title="Back to All Transactions" class="btn btn-default btn-circle btn-lg" style="padding-top:13px !important;"><i class="fa fa-arrow-left"></i></a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+@*UnDelete Transaction Modal*@
+<div class="modal fade" id="undelete-trans-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Undelete this Transaction?</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h3 id="undelete_trans_name"></h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" id="undelete_trans_description">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 id="undelete_trans_value"></h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @using (Html.BeginForm("Voided", "Transactions", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <fieldset>
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <input type="hidden" value="" id="undelete_trans_id" name="Id" />
+                                        <input type="submit" value="Undelete Transaction" class="btn btn-danger btn-block" />
+                                    </fieldset>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#transactions").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                    'colvis'
+                ],
+                "order": [[ 4, "desc" ]],
+                responsive: true
+            });
+
+            function transColor(expense) {
+                if (expense == "True") {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-warning")
+                }
+                else {
+                    $("#balance").removeClass("panel-success")
+                    $("#balance").addClass("panel-danger")
+                }
+            }
+            function transDate2(count, created, updated) {
+                var time1 = getUserTime(created);
+                $("#transaction_create_" + count).append(time1);
+                var time2 = getUserTime(updated);
+                $("#transaction_update_" + count).append(time2);
+            }
+            function transDate(count, created) {
+                var time1 = getUserTime(created);
+                $("#transaction_create_" + count).append(time1);
+            }
+            @{
+                int count = 0;
+                foreach(var transaction in Model.Where(t=>t.Void))
+                {
+                    <text>
+            $(document).on('click', '#undelete_trans_@count', function () {
+                $("#undelete-trans-modal").modal("show");
+                $("#undelete_trans_id").val(@transaction.Id);
+                $("#undelete_trans_name").html('@transaction.Name');
+                $("#undelete_trans_description").html('@transaction.Description');
+                if ('@transaction.Expense' == "True") {
+                    $("#undelete_trans_value").removeClass("text-success");
+                    $("#undelete_trans_value").html("-$"+@transaction.Value);
+                    $("#undelete_trans_value").addClass("text-danger");
+                }
+                else {
+                    $("#undelete_trans_value").removeClass("text-danger");
+                    $("#undelete_trans_value").html("+$"+@transaction.Value);
+                    $("#undelete_trans_value").addClass("text-success");
+                }
+            });
+
+            @if(transaction.Updated != null)
+            {
+                @:transDate2(@count,'@transaction.Created.ToUniversalTime().ToString()', '@transaction.Updated.Value.ToUniversalTime().ToString()');
+            }
+            else
+            {
+                @:transDate(@count,'@transaction.Created.ToUniversalTime().ToString()');
+            }
+            </text>
+                    count++;
+                }
+            }
+
+        });
+    </script>
+}

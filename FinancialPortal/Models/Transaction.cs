@@ -27,6 +27,7 @@ namespace FinancialPortal.Models
         public int? CategoryId { get; set; }
         public int? TypeId { get; set; }
 
+        [Display(Name = "Account Name")]
         public virtual Bank Bank { get; set; }
         public virtual Category Category { get; set; }
         public virtual TransType Type {get;set;}

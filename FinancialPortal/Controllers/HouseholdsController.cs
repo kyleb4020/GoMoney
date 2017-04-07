@@ -62,6 +62,15 @@ namespace FinancialPortal.Controllers
             return PartialView(household);
         }
 
+        //Categories Partial
+        //[DonutOutputCache(Duration = 0)]
+        public PartialViewResult _Categories()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var household = user.Household;
+            return PartialView(household);
+        }
+
         // GET: Households/Join
         public ActionResult Join()
         {
@@ -184,13 +193,14 @@ namespace FinancialPortal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Balance,Created,Updated,Password")] Household household)
+        public ActionResult Create([Bind(Include = "Id,Name,Balance,Created,Updated")] Household household)
         {
             if (ModelState.IsValid)
             {
                 household.Created = DateTimeOffset.Now;
                 household.Balance = 0;
                 household.Members.Add(db.Users.Find(User.Identity.GetUserId()));
+                household.Categories = db.Categories.Where(c => c.Default).ToList();
                 db.Households.Add(household);
                 db.Users.Find(User.Identity.GetUserId()).Household = household;
                 db.SaveChanges();

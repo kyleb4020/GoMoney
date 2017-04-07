@@ -61,7 +61,7 @@ namespace FinancialPortal.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Description,Balance,BankTypeId")] Bank bank)
+        public ActionResult Create([Bind(Include = "Id,Name,Description,Balance,BankTypeId,Include")] Bank bank)
         {
             if (ModelState.IsValid)
             {
@@ -69,21 +69,39 @@ namespace FinancialPortal.Controllers
                 bank.InitialBalance = bank.Balance;
                 bank.Created = DateTimeOffset.UtcNow;
                 bank.Household = user.Household;
-                db.Banks.Add(bank);
+                bank.BankType = db.BankTypes.Find(bank.BankTypeId);
+                Bank newBank = bank;
+                db.Banks.Add(newBank);
+                db.SaveChanges();
 
                 //Add Initial Balance Transaction
                 var inTrans = new Transaction();
-                inTrans.Bank = bank;
+                inTrans.Bank = newBank;
                 inTrans.Category = db.Categories.FirstOrDefault(c => c.Name == "Initial Balance");
                 inTrans.Created = DateTimeOffset.UtcNow;
                 inTrans.Description = "This is the starting balance";
-                inTrans.Expense = false;
+                if(inTrans.Bank.BankType.Name == "Credit Card" || inTrans.Bank.BankType.Name == "Loan")
+                {
+                    inTrans.Expense = true;
+                }
+                else if(inTrans.Bank.BankType.Name == "Savings Account" || 
+                    inTrans.Bank.BankType.Name == "Checking Account" || 
+                    inTrans.Bank.BankType.Name == "Retirement Account")
+                {
+                    inTrans.Expense = false;
+                }
                 inTrans.Name = "Initial Balance";
                 inTrans.Submitter = user.Id;
                 inTrans.Type = db.TransTypes.FirstOrDefault(tt => tt.Name == "Other");
                 inTrans.Value = bank.InitialBalance;
                 inTrans.Void = false;
                 db.Transactions.Add(inTrans);
+                db.Banks.Find(newBank.Id).Transactions.Add(inTrans);
+                db.SaveChanges();
+
+                //Recalculate Bank Balance
+                newBank.Balance = bh.TotalAllTrans(bank);
+                db.Entry(newBank).State = EntityState.Modified;
 
                 //Update Household Balance
                 user.Household.Balance = hh.HouseholdBalance(user.Household);
@@ -132,7 +150,7 @@ namespace FinancialPortal.Controllers
 
                 //Update Initial Transaction
                 var iniTrans = thisBank.Transactions.FirstOrDefault(t => t.Category.Name == "Initial Balance");
-                iniTrans.Value = thisBank.Balance;
+                iniTrans.Value = thisBank.InitialBalance;
                 iniTrans.Updated = DateTimeOffset.UtcNow;
                 iniTrans.Editor = User.Identity.GetUserId();
                 db.Entry(iniTrans).State = EntityState.Modified;

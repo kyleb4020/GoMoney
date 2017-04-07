@@ -568,6 +568,8 @@
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
     <Content Include="Views\Households\_Banks.cshtml" />
+    <Content Include="Views\Transactions\Voided.cshtml" />
+    <Content Include="Views\Shared\_Categories.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
