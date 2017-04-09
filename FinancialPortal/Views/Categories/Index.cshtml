@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-1">
-            <a href="#create_modal" class="btn btn-success btn-circle btn-lg" title="Add a New Category"><i class="fa fa-plus"></i></a>
+            <button href="#create_modal" type="button" data-toggle="modal" title="Add Transaction" class="btn btn-success btn-circle btn-lg"><i class="fa fa-plus"></i></button>
         </div>
         <div class="col-lg-11">
             <h2>Categories</h2>
@@ -15,55 +15,246 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <table class="table">
+            <h3 class="text-danger">@ViewBag.ErrorMessage</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table" id="categories">
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Categories.Budgets.First().Name)
+                            @Html.DisplayNameFor(model => model.Categories.First().Budgets.First().Name)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Categories.Name)
+                            @Html.DisplayNameFor(model => model.Categories.First().Name)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Categories.Description)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Categories.Created)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Categories.Updated)
+                            @Html.DisplayNameFor(model => model.Categories.First().Description)
                         </th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Budgets.FirstOrDefault(b=>b.HouseholdId == Model.HouseholdId).Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Created)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Updated)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                            </td>
-                        </tr>
+                    @{
+                        int num = 0;
+                        foreach (var item in Model.Categories)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId).Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-circle" id="edit_category_@num" title="Edit Category"><i class="fa fa-edit"></i></button>
+                                    <button type="button" class="btn btn-danger btn-circle" id="delete_category_@num" title="Delete Category"><i class="fa fa-close"></i></button>
+                                </td>
+                            </tr>
+                            num++;
+                        }
                     }
-                    </tbody>
-                </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@*Create Category Modal*@
+<div class="modal fade" id="create_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Add a New Category</h3>
+                    </div>
+                    <div class="panel-body">
+                        @using (Html.BeginForm("Create", "Categories", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <fieldset>
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.NewCategory.Name, "Transaction Title", htmlAttributes: new { @class = "control-label" })
+                                    <input class="form-control text-box single-line" data-val="true" data-val-required="The Name field is required." id="Category_Name" name="Name" placeholder="Category Name" type="text" value="" autofocus>
+                                    @*@Html.EditorFor(model => model.Email.ToName, new { htmlAttributes = new { @class = "form-control", placeholder = "Recipient's Name" } })*@
+                                    @Html.ValidationMessageFor(model => model.NewCategory.Name, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.NewCategory.Description, "Transaction Description", htmlAttributes: new { @class = "control-label" })
+                                    <input class="form-control text-box single-line" data-val="true" data-val-required="The Description field is required." id="Category_Description" name="Description" placeholder="Category Description" type="text" value="">
+                                    @Html.ValidationMessageFor(model => model.NewCategory.Description, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NewCategory.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId).Id, "Budget", htmlAttributes: new { @class = "control-label" })
+                                    @Html.DropDownList("BudgetId", null, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.NewCategory.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId).Id, "", new { @class = "text-danger" })
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <input type="submit" value="Add Category" class="btn btn-info btn-block" style="margin-top:1em;" />
+                            </fieldset>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
             </div>
         </div>
     </div>
+</div>
+
+@*Edit Category Modal*@
+<div class="modal fade" id="edit_category_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Edit Category</h3>
+                    </div>
+                    <div class="panel-body">
+                        @using (Html.BeginForm("Edit", "Categories", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <fieldset>
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <input type="hidden" value="" id="edit_category_id" name="Category.Id" />
+                                <input type="hidden" value="" id="edit_category_default" name="Category.Default" />
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NewCategory.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <input class="form-control text-box single-line" data-val="true" data-val-required="The Name field is required." id="edit_category_name" name="Category.Name" placeholder="Category Name" type="text" value="" autofocus>
+                                    @Html.ValidationMessageFor(model => model.NewCategory.Name, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NewCategory.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <input class="form-control text-box single-line" id="edit_category_description" name="Category.Description" placeholder="Category Description" type="text" value="">
+                                    @Html.ValidationMessageFor(model => model.NewCategory.Description, "", new { @class = "text-danger" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.NewCategory.Budgets.FirstOrDefault(b=>b.HouseholdId == Model.HouseholdId).Id, "Budget", htmlAttributes: new { @class = "control-label" })
+                                        @Html.DropDownList("EditBudgetId", null, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.NewCategory.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId).Id, "", new { @class = "text-danger" })
+                                </div>
+                                <input type="submit" value="Save Changes" class="btn btn-info btn-block" style="margin-top:1em;" />
+                            </fieldset>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Delete Transaction Modal*@
+<div class="modal fade" id="delete_category_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="container modal-dialog">
+        <div class="row">
+            <div class="col-lg-1 pull-right">
+                <button type="button" class="close" style="color:#cccccc;" data-dismiss="modal" aria-hidden="true">×</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Delete Category?</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h3 id="delete_category_name"></h3>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" id="delete_category_description">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12" style="margin-top:1em;">
+                                @using (Html.BeginForm("Delete", "Categories", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <fieldset>
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <input type="hidden" value="" id="delete_category_id" name="id" />
+                                        <input type="hidden" value="" id="delete_budgetId" name="budgetId" />
+                                        <input type="hidden" value="" id="delete_category_default" name="Default" />
+                                        <input type="submit" value="Delete Category" class="btn btn-danger btn-block" />
+                                    </fieldset>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#categories").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                    'colvis'
+                ],
+                "order": [[1, "asc"]],
+                responsive: true
+            });
+
+            @{
+                int count = 0;
+                foreach(var category in Model.Categories)
+                {
+                    <text>
+                    var budgetId_@count = 0;
+
+                    @if(category.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId) != null)
+                    {
+                        @:budgetId = @category.Budgets.FirstOrDefault(b => b.HouseholdId == Model.HouseholdId).Id
+                    }
+                    $(document).on('click', '#edit_category_@count', function(){
+                        EditCategory(@category.Id,'@category.Name','@category.Description',budgetId_@count,'@category.Default')});
+                    $(document).on('click', '#delete_category_@count', function(){
+                        DeleteCategory(@category.Id,'@category.Name','@category.Description',budgetId_@count,'@category.Default')});
+                    </text>
+                    count++;
+                }
+            }
+        });
+
+    </script>    
+    
+}

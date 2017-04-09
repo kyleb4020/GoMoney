@@ -39,7 +39,8 @@ namespace FinancialPortal
                       "~/Scripts/dataTables.buttons.min.js",
                       "~/Scripts/buttons.colVis.min.js",
                       "~/Scripts/excanvas.min.js",
-                      "~/Scripts/flot-demo.js"));
+                      "~/Scripts/flot-demo.js",
+                      "~/Scripts/bootstrap-multiselect.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
@@ -54,7 +55,8 @@ namespace FinancialPortal
                       "~/Content/responsive.dataTables.min.css",
                       "~/Content/buttons.dataTables.min.css",
                       "~/Content/social-button.css",
-                      "~/Content/timeline.css"));
+                      "~/Content/timeline.css",
+                      "~/Content/bootstrap-multiselect.css"));
         }
     }
 }

@@ -48,10 +48,10 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.BudgetId, "BudgetId", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Budgets.FirstOrDefault().Id, "BudgetId", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("BudgetId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.BudgetId, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.Budgets.FirstOrDefault(), "", new { @class = "text-danger" })
             </div>
         </div>
 

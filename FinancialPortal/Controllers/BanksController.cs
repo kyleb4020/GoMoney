@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 
 namespace FinancialPortal.Controllers
 {
+    [Authorize]
     public class BanksController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -22,6 +23,11 @@ namespace FinancialPortal.Controllers
         // GET: Banks
         public ActionResult Index()
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             var banks = db.Banks.Include(b => b.Household);
             return View(banks.ToList());
         }
@@ -29,6 +35,11 @@ namespace FinancialPortal.Controllers
         // GET: Banks/Details/5
         public ActionResult Details(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -51,6 +62,11 @@ namespace FinancialPortal.Controllers
         // GET: Banks/Create
         public ActionResult Create()
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             var bankTypes = db.BankTypes.ToList();
             ViewBag.BankTypeId = new SelectList(bankTypes, "Id", "Name");
             return View();
@@ -116,6 +132,11 @@ namespace FinancialPortal.Controllers
         // GET: Banks/Edit/5
         public ActionResult Edit(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -173,6 +194,11 @@ namespace FinancialPortal.Controllers
         // GET: Banks/Delete/5
         public ActionResult Delete(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -193,7 +219,6 @@ namespace FinancialPortal.Controllers
             Bank bank = db.Banks.Find(id);
             Household household = bank.Household;
             db.Banks.Remove(bank);
-            //Will this delete all transactions in this bank?
 
             //Update Household balance
             household.Balance = hh.HouseholdBalance(household);

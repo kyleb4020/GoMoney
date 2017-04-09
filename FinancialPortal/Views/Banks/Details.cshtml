@@ -395,7 +395,7 @@
 </div>
 
 @section scripts{
-    <script type="text/javascript">
+    <script type="text/javascript">        
         $(document).ready(function () {
             $("#bank_transactions").DataTable({
                 dom: 'Blfrtip',
@@ -404,75 +404,16 @@
                 ],
                 "order": [[ 3, "desc" ]],
                 responsive: true
-            });
+            });            
 
-            function transColor(expense) {
-                if (expense == "True") {
-                    $("#balance").removeClass("panel-success")
-                    $("#balance").addClass("panel-warning")
-                }
-                else {
-                    $("#balance").removeClass("panel-success")
-                    $("#balance").addClass("panel-danger")
-                }
-            }
-            function transDate2(count, created, updated) {
-                var time1 = getUserTime(created);
-                $("#transaction_create_" + count).append(time1);
-                var time2 = getUserTime(updated);
-                $("#transaction_update_" + count).append(time2);
-            }
-            function transDate(count, created) {
-                var time1 = getUserTime(created);
-                $("#transaction_create_" + count).append(time1);
-            }
             @{
                 int count = 0;
                 foreach(var transaction in Model.Bank.Transactions.Where(t=>t.Void==false))
                 {
                     <text>
-            $(document).on('click', '#delete_trans_@count', function () {
-                $("#delete-trans-modal").modal("show");
-                $("#delete_trans_id").val(@transaction.Id);
-                $("#delete_trans_name").html('@transaction.Name');
-                $("#delete_trans_description").html('@transaction.Description');
-                if ('@transaction.Expense' == "True") {
-                    $("#delete_trans_value").html("-$"+@transaction.Value);
-                    $("#delete_trans_value").addClass("text-danger");
-                }
-                else {
-                    $("#delete_trans_value").html("+$"+@transaction.Value);
-                    $("#delete_trans_value").addClass("text-success");
-                }
-            });
+            $(document).on('click', '#delete_trans_@count', function(){DeleteTrans(@transaction.Id,'@transaction.Name','@transaction.Description','@transaction.Expense',@transaction.Value)});
 
-            $(document).on('click', '#edit_trans_@count', function () {
-                $("#edit-trans-modal").modal("show");
-                $("#edit_transaction_id").val(@transaction.Id);
-                $("#edit_transaction_name").val('@transaction.Name');
-                $("#edit_transaction_description").val('@transaction.Description');
-                $("#edit_transaction_value").val(@transaction.Value);
-                if ('@transaction.Expense' == "True") 
-                {
-                    $("#edit_transaction_expense").prop("checked", true);
-                }
-                else 
-                {
-                    $("#edit_transaction_expense").prop("checked", false);
-                }
-                if ('@transaction.Reconciled' == "True") 
-                {
-                    $("#edit_transaction_reconciled").prop("checked", true);
-                    $("#edit_transaction_reconciledvalue").prop('disabled', false)
-                }
-                else 
-                {
-                    $("#edit_transaction_reconciled").attr("checked", false);
-                }
-                $("#edit_transaction_reconciledvalue").val(@transaction.ReconciledValue);
-                $("#EditCategoryId").val(@transaction.CategoryId);
-                $("#EditTypeId").val(@transaction.TypeId);
-            });
+            $(document).on('click', '#edit_trans_@count', function(){EditBankTrans(@transaction.Id,'@transaction.Name','@transaction.Description','@transaction.Expense','@transaction.Reconciled',@transaction.ReconciledValue,@transaction.CategoryId,@transaction.TypeId)});
 
             @if(transaction.Updated != null)
             {

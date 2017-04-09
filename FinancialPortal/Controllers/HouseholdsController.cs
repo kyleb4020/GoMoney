@@ -18,6 +18,7 @@ using DevTrends.MvcDonutCaching;
 
 namespace FinancialPortal.Controllers
 {
+    [Authorize]
     public class HouseholdsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -74,8 +75,6 @@ namespace FinancialPortal.Controllers
         // GET: Households/Join
         public ActionResult Join()
         {
-            //var households = db.Households.ToList();
-            //ViewBag.HouseholdId = new SelectList(households, "Id", "Name");
             return View();
         }
 
@@ -168,19 +167,19 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Households/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Household household = db.Households.Find(id);
-            if (household == null)
-            {
-                return HttpNotFound();
-            }
-            return View(household);
-        }
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Household household = db.Households.Find(id);
+        //    if (household == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(household);
+        //}
 
         // GET: Households/Create
         public ActionResult Create()
@@ -213,6 +212,11 @@ namespace FinancialPortal.Controllers
         // GET: Households/Edit/5
         public ActionResult Edit(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -244,6 +248,11 @@ namespace FinancialPortal.Controllers
         // GET: Households/Delete/5
         public ActionResult Delete(int? id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

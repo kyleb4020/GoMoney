@@ -13,6 +13,7 @@ using FinancialPortal.ViewModels;
 
 namespace FinancialPortal.Controllers
 {
+    [Authorize]
     public class TransactionsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -23,6 +24,10 @@ namespace FinancialPortal.Controllers
         public ActionResult Index()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b=>b.Transactions.Where(t=>t.Void == false));
             ViewBag.OtherBankId = new SelectList(db.Banks, "Id", "Name");
             ViewBag.BankId = new SelectList(db.Banks, "Id", "Name");
@@ -36,28 +41,28 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Transactions/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Transaction transaction = db.Transactions.Find(id);
-            if (transaction == null)
-            {
-                return HttpNotFound();
-            }
-            return View(transaction);
-        }
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Transaction transaction = db.Transactions.Find(id);
+        //    if (transaction == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(transaction);
+        //}
 
         // GET: Transactions/Create
-        public ActionResult Create()
-        {
-            ViewBag.BankId = new SelectList(db.Banks, "Id", "Name");
-            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
-            ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name");
-            return View();
-        }
+        //public ActionResult Create()
+        //{
+        //    ViewBag.BankId = new SelectList(db.Banks, "Id", "Name");
+        //    ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name");
+        //    ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name");
+        //    return View();
+        //}
 
         // POST: Transactions/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -120,22 +125,22 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Transactions/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Transaction transaction = db.Transactions.Find(id);
-            if (transaction == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.BankId = new SelectList(db.Banks, "Id", "Name", transaction.BankId);
-            ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", transaction.CategoryId);
-            ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name", transaction.TypeId);
-            return View(transaction);
-        }
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Transaction transaction = db.Transactions.Find(id);
+        //    if (transaction == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    ViewBag.BankId = new SelectList(db.Banks, "Id", "Name", transaction.BankId);
+        //    ViewBag.CategoryId = new SelectList(db.Categories, "Id", "Name", transaction.CategoryId);
+        //    ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name", transaction.TypeId);
+        //    return View(transaction);
+        //}
 
         // POST: Transactions/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -181,19 +186,19 @@ namespace FinancialPortal.Controllers
         }
 
         // GET: Transactions/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Transaction transaction = db.Transactions.Find(id);
-            if (transaction == null)
-            {
-                return HttpNotFound();
-            }
-            return View(transaction);
-        }
+        //public ActionResult Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Transaction transaction = db.Transactions.Find(id);
+        //    if (transaction == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(transaction);
+        //}
 
         // POST: Transactions/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -217,6 +222,10 @@ namespace FinancialPortal.Controllers
         public ActionResult Voided()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {
+                RedirectToAction("Index", "Households");
+            }
             var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b => b.Transactions.Where(t => t.Void));
 
             return View(transactions);

@@ -178,7 +178,6 @@
                                 <div class="form-group">
                                     @Html.LabelFor(m => m.NewTrans.Name, "Transaction Title", htmlAttributes: new { @class = "control-label" })
                                     <input class="form-control text-box single-line" data-val="true" data-val-required="The Title field is required." id="Transaction_Name" name="NewTrans.Name" placeholder="Transaction Title" type="text" value="" autofocus>
-                                    @*@Html.EditorFor(model => model.Email.ToName, new { htmlAttributes = new { @class = "form-control", placeholder = "Recipient's Name" } })*@
                                     @Html.ValidationMessageFor(model => model.NewTrans.Name, "", new { @class = "text-danger" })
                                 </div>
                                 <div class="form-group">
@@ -298,7 +297,7 @@
                                     @Html.DropDownList("EditTypeId", null, htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => model.NewTrans.TypeId, "", new { @class = "text-danger" })
                                 </div>
-                                <input type="submit" value="Save Changes" class="btn btn-info btn-block" />
+                                <input type="submit" value="Save Changes" class="btn btn-success btn-block" />
                             </fieldset>
                         }
                     </div>
@@ -370,84 +369,15 @@
 
 @section scripts{
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#transactions").DataTable({
-                dom: 'Blfrtip',
-                buttons: [
-                    'colvis'
-                ],
-                "order": [[ 4, "desc" ]],
-                responsive: true
-            });
-
-            function transColor(expense) {
-                if (expense == "True") {
-                    $("#balance").removeClass("panel-success")
-                    $("#balance").addClass("panel-warning")
-                }
-                else {
-                    $("#balance").removeClass("panel-success")
-                    $("#balance").addClass("panel-danger")
-                }
-            }
-            function transDate2(count, created, updated) {
-                var time1 = getUserTime(created);
-                $("#transaction_create_" + count).append(time1);
-                var time2 = getUserTime(updated);
-                $("#transaction_update_" + count).append(time2);
-            }
-            function transDate(count, created) {
-                var time1 = getUserTime(created);
-                $("#transaction_create_" + count).append(time1);
-            }
+        $(document).ready(function () {                     
+            
             @{
                 int count = 0;
                 foreach(var transaction in Model.AllTrans.Where(t=>t.Void==false))
                 {
                     <text>
-            $(document).on('click', '#delete_trans_@count', function () {
-                $("#delete-trans-modal").modal("show");
-                $("#delete_trans_id").val(@transaction.Id);
-                $("#delete_trans_name").html('@transaction.Name');
-                $("#delete_trans_description").html('@transaction.Description');
-                if ('@transaction.Expense' == "True") {
-                    $("#delete_trans_value").html("-$"+@transaction.Value);
-                    $("#delete_trans_value").addClass("text-danger");
-                }
-                else {
-                    $("#delete_trans_value").html("+$"+@transaction.Value);
-                    $("#delete_trans_value").addClass("text-success");
-                }
-            });
-
-            $(document).on('click', '#edit_trans_@count', function () {
-                $("#edit-trans-modal").modal("show");
-                $("#edit_transaction_id").val(@transaction.Id);
-                $("#edit_transaction_id").val(@transaction.BankId);
-                $("#edit_transaction_name").val('@transaction.Name');
-                $("#edit_transaction_description").val('@transaction.Description');
-                $("#edit_transaction_value").val(@transaction.Value);
-                if ('@transaction.Expense' == "True")
-                {
-                    $("#edit_transaction_expense").prop("checked", true);
-                }
-                else
-                {
-                    $("#edit_transaction_expense").prop("checked", false);
-                }
-                if ('@transaction.Reconciled' == "True")
-                {
-                    $("#edit_transaction_reconciled").prop("checked", true);
-                    $("#edit_transaction_reconciledvalue").prop('disabled', false)
-                }
-                else
-                {
-                    $("#edit_transaction_reconciled").attr("checked", false);
-                }
-                $("#edit_transaction_reconciledvalue").val(@transaction.ReconciledValue);
-                $("#EditCategoryId").val(@transaction.CategoryId);
-                $("#EditTypeId").val(@transaction.TypeId);
-            });
+            $(document).on('click', '#delete_trans_@count', function(){DeleteTrans(@transaction.Id,'@transaction.Name','@transaction.Description','@transaction.Expense',@transaction.Value)});
+            $(document).on('click', '#edit_trans_@count', function(){EditTrans(@transaction.Id,@transaction.BankId,'@transaction.Name','@transaction.Description',@transaction.Value,'@transaction.Expense','@transaction.Reconciled',@transaction.ReconciledValue,@transaction.CategoryId,@transaction.TypeId)});
 
             @if(transaction.Updated != null)
             {

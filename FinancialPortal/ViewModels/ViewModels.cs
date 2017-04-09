@@ -28,5 +28,19 @@ namespace FinancialPortal.ViewModels
     {
         public ICollection<Category> Categories { get; set; }
         public int HouseholdId { get; set; }
+        public Category NewCategory { get; set; }
+    }
+
+    public class BudgetsIndexVM
+    {
+        public ICollection<Budget> Budgets { get; set; }
+        public ICollection<Month> Months { get; set; }
+        public Budget NewBudget { get; set; }
+    }
+
+    public class BudgetDetailsVM
+    {
+        public Budget Budget { get; set; }
+        public ICollection<Transaction>Transactions { get; set; }
     }
 }

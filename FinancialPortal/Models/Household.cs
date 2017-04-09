@@ -14,6 +14,7 @@ namespace FinancialPortal.Models
             this.Members = new HashSet<ApplicationUser>();
             this.Invitations = new HashSet<Invitation>();
             this.Categories = new HashSet<Category>();
+            this.Months = new HashSet<Month>();
         }
 
         public int Id { get; set; }
@@ -22,6 +23,7 @@ namespace FinancialPortal.Models
         public DateTimeOffset Created { get; set; }
         public DateTimeOffset? Updated { get; set; }
 
+        public virtual ICollection<Month> Months { get; set; }
         public virtual ICollection<Category> Categories { get; set; }
         public virtual ICollection<Invitation> Invitations { get; set; }
         public virtual ICollection<ApplicationUser> Members { get; set; }

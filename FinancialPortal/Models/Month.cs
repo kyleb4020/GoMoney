@@ -15,8 +15,11 @@ namespace FinancialPortal.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public int MonthNum { get; set; }
         public int Year { get; set; }
+        public int HouseholdId { get; set; }
 
+        public virtual Household Household { get; set; }
         public virtual ICollection<Budget> Budgets { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
     }
