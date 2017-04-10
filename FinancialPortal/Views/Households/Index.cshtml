@@ -21,6 +21,8 @@
 
             <div class="col-lg-12">
                 <h3 class="text-danger">@ViewBag.HouseholdsError</h3>
+                <h2>Step 1: Join or create a household</h2>
+                <h4>After you're in a household, all other options will become available to you.</h4>
                 @Html.ActionLink("Create New Household", "Create", null, new { @class = "btn btn-success" })
                 @Html.ActionLink("Join Existing Household", "Join", null, new { @class = "btn btn-primary" })
             </div>

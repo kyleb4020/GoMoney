@@ -26,7 +26,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             var banks = db.Banks.Include(b => b.Household);
             return View(banks.ToList());
@@ -38,7 +38,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             if (id == null)
             {
@@ -65,7 +65,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             var bankTypes = db.BankTypes.ToList();
             ViewBag.BankTypeId = new SelectList(bankTypes, "Id", "Name");
@@ -135,7 +135,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             if (id == null)
             {
@@ -197,7 +197,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             if (id == null)
             {

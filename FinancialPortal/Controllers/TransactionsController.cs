@@ -26,7 +26,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b=>b.Transactions.Where(t=>t.Void == false));
             ViewBag.OtherBankId = new SelectList(db.Banks, "Id", "Name");
@@ -224,7 +224,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             var transactions = db.Households.Find(user.HouseholdId).Banks.SelectMany(b => b.Transactions.Where(t => t.Void));
 

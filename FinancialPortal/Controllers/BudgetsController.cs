@@ -26,7 +26,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if(user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             //Check if current month has been created
             var thisMonth = DateTime.Now.Month;
@@ -72,6 +72,11 @@ namespace FinancialPortal.Controllers
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (user.Household == null)
+            {                
+                return RedirectToAction("Index", "Households");
             }
             Budget budget = db.Budgets.Find(id);
             if (budget == null)
@@ -159,6 +164,7 @@ namespace FinancialPortal.Controllers
                 {
                     EBudget.Categories.Add(db.Categories.Find(id));
                 }
+                EBudget.Updated = DateTimeOffset.UtcNow;
 
                 db.Entry(EBudget).State = EntityState.Modified;
                 db.SaveChanges();

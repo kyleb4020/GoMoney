@@ -13,7 +13,7 @@
                     <h2>Household Budget</h2>
                 </div>
                 <div class="panel-body">
-                    <p>Create and track your budget below. A good place to start is with your expected income.</p>
+                    <p>Create and track your budget. A good place to start is with your expected income.</p>
                     <ul class="nav nav-tabs">
                         @{
                             foreach (var month in Model.Months)
@@ -27,6 +27,34 @@
                     @foreach (var month in Model.Months)
                     {
                         <div class="tab-pane fade in active" id="month_@month.Id">
+                            <div class="row">
+                                <div class="col-lg-3 pull-right">
+                                    <div class="well-sm">
+                                        @if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > 5)
+                                        {
+                                            <h5>Total Budget Remaining:</h5><h3><span class="text-success">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                        }
+                                        else if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) <= 5 && (month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > -5)
+                                        {
+                                            <h5>Total Budget Remaining:</h5><h3><span class="text-info">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                        }
+                                        else
+                                        {
+                                            <h5>Total Budget Remaining:</h5><h3><span class="text-danger">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 pull-right">
+                                    <div class="well-sm">
+                                        <h5>Total Expected Expenses:</h5><h3><span class="text-danger">-$@month.Budgets.Where(b => b.Expense).Sum(b => b.Value)</span></h3>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 pull-right">
+                                    <div class="well-sm">
+                                        <h5>Total Expected Income:</h5><h3><span class="text-success">+$@month.Budgets.Where(b => !b.Expense).Sum(b => b.Value)</span></h3>
+                                    </div>
+                                </div>                             
+                            </div>
                             <div class="panel-group" id="accordion">
                                 @{
                                     var num = 0;
@@ -48,6 +76,7 @@
                                                         <div>
                                                             <p>                                                                
                                                                 <span class="pull-right">
+                                                                    <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="Budget Details"><i class="fa fa-info"></i></a>
                                                                     <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
                                                                     <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
                                                                 </span>
@@ -79,6 +108,7 @@
                                                         <div>
                                                             <p>
                                                                 <span class="pull-right">
+                                                                    <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="View Details and Transactions"><i class="fa fa-info"></i></a>
                                                                     <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
                                                                     <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
                                                                 </span>

@@ -23,7 +23,7 @@ namespace FinancialPortal.Controllers
             var user = db.Users.Find(User.Identity.GetUserId());
             if (user.Household == null)
             {
-                RedirectToAction("Index", "Households");
+                return RedirectToAction("Index", "Households");
             }
             var categories = db.Households.Find(user.HouseholdId).Categories.ToList();
             CategoriesIndexVM VM = new CategoriesIndexVM();
