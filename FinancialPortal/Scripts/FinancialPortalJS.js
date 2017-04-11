@@ -112,6 +112,7 @@ function EditTrans(id, bankId, name, description, value, expense, reconciled, re
     }
     $("#edit_transaction_reconciledvalue").val(reconciledValue);
     $("#EditCategoryId").val(categoryId);
+    $("#EditCategoryId").multiselect("refresh");
     $("#EditTypeId").val(typeId);
 }
 
@@ -140,6 +141,7 @@ function EditBankTrans(id,name,description,value,expense,reconciled,reconciledVa
     }
     $("#edit_transaction_reconciledvalue").val(reconciledValue);
     $("#EditCategoryId").val(categoryId);
+    $("#EditCategoryId").multiselect("refresh");
     $("#EditTypeId").val(type);
 }
 

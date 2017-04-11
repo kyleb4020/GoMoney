@@ -28,8 +28,6 @@ namespace FinancialPortal
                       "~/Scripts/siminta.js",
                       "~/Scripts/raphael-2.1.0.min.js",
                       "~/Scripts/morris.js",
-                      "~/Scripts/morris-demo.js",
-                      "~/Scripts/dashboard-demo.js",
                       "~/Scripts/jquery.flot.js",
                       "~/Scripts/jquery.flot.pie.js",
                       "~/Scripts/jquery.flot.tooltip.min.js",
@@ -39,7 +37,6 @@ namespace FinancialPortal
                       "~/Scripts/dataTables.buttons.min.js",
                       "~/Scripts/buttons.colVis.min.js",
                       "~/Scripts/excanvas.min.js",
-                      "~/Scripts/flot-demo.js",
                       "~/Scripts/bootstrap-multiselect.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(

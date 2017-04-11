@@ -35,17 +35,17 @@
                     Recent Transactions
                 </div>
                 <div class="panel-body">
-                    <table>
+                    <table width="100%">
                         <thead>
                             <tr>
                                 <th>
-                                    Title
+                                    @Html.DisplayNameFor(t=>t.Transactions.First().Name)
                                 </th>
                                 <th>
-                                    Description
+                                    @Html.DisplayNameFor(t => t.Transactions.First().Description)
                                 </th>
-                                <th>
-                                    Amount
+                                <th style="text-align:right">
+                                    @Html.DisplayNameFor(t => t.Transactions.First().Value)
                                 </th>
                             </tr>
                         </thead>
@@ -59,7 +59,7 @@
                                     <td style="padding:.25em">
                                         @Html.DisplayFor(t => trans.Description)
                                     </td>
-                                    <td style="padding:.25em">
+                                    <td style="padding:.25em; text-align:right">
                                         $@Html.DisplayFor(t => trans.Value)
                                     </td>
                                 </tr>
