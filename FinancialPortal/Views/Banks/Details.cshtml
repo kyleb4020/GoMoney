@@ -426,7 +426,16 @@
             </text>
                     count++;
                 }
-            }
+            }            
+
+            $("#transactions").DataTable({
+                dom: 'Blfrtip',
+                buttons: [
+                    'colvis'
+                ],
+                "order": [[3, "asc"]],
+                responsive: true
+            });
 
             $("#edit_transaction_reconciled").change(function () {
                 if ($(this).is(":checked")) {

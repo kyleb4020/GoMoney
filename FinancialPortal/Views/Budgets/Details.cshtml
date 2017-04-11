@@ -303,10 +303,20 @@
             else
             {
                 @:transDate(@count,'@transaction.Created.ToUniversalTime().ToString()');
-                }
+                    }
                 count++;
             }
-            }
+            }        
+
+        $("#transactions").DataTable({
+            dom: 'Blfrtip',
+            buttons: [
+                'colvis'
+            ],
+            "order": [[4, "asc"]],
+            responsive: true
+        });
+
         $("#edit_transaction_reconciled").change(function () {
             if ($(this).is(":checked")) {
                 $("#edit_transaction_reconciledvalue").prop('disabled', false)

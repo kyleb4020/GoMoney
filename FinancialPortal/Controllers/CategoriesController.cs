@@ -31,7 +31,7 @@ namespace FinancialPortal.Controllers
             VM.HouseholdId = Convert.ToInt32(user.HouseholdId);
             var budgetList = db.Budgets.Where(b => b.HouseholdId == user.HouseholdId).ToList();
             budgetList.Add(new Budget { Id = 0, Name = "", Description = "" });
-            budgetList.Sort();
+            budgetList = budgetList.OrderBy(b=>b.Id).ToList();
             ViewBag.BudgetId = new SelectList(budgetList, "Id", "Name",0);
             ViewBag.EditBudgetId = new SelectList(budgetList, "Id", "Name");
             return View(VM);

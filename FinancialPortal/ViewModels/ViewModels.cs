@@ -43,4 +43,10 @@ namespace FinancialPortal.ViewModels
         public Budget Budget { get; set; }
         public ICollection<Transaction>Transactions { get; set; }
     }
+
+    public class DashboardVM
+    {
+        public ICollection<Budget> Budgets { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
+    }
 }

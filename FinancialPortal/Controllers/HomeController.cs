@@ -1,6 +1,8 @@
 ﻿using FinancialPortal.Models;
+using FinancialPortal.ViewModels;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,9 +16,22 @@ namespace FinancialPortal.Controllers
     public class HomeController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
         public ActionResult Index()
-        {            
-            return View();
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if(user.Household == null)
+            {
+                return RedirectToAction("Index", "Households");
+            }
+            var budgets = db.Households.Find(user.Household.Id).Budgets.Where(b => b.Month.MonthNum == DateTime.Now.Month && b.Expense).ToList();
+            var transactions = db.Households.Find(user.Household.Id).Banks.SelectMany(b => b.Transactions.OrderBy(t => t.Created)).Where(t=>t.Created > DateTime.Today.AddDays(-7)).ToList();
+            //string JSONbudgets = JsonConvert.SerializeObject(budgets);
+            //ViewBag.JSONbudgets = JSONbudgets;
+            DashboardVM VM = new DashboardVM();
+            VM.Budgets = budgets;
+            VM.Transactions = transactions;
+            return View(VM);
         }
 
         //public ActionResult About()

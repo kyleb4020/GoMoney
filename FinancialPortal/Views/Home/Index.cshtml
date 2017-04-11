@@ -1,3 +1,116 @@
-﻿@{
+﻿@model FinancialPortal.ViewModels.DashboardVM
+@{
     ViewBag.Title = "Dashboard";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Budget Spending
+                </div>
+                <div class="panel-body">
+                    <div id="bar-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Total Spending by Budget Category
+                </div>
+                <div class="panel-body">
+                    <div class="flot-chart">
+                        <div class="flot-chart-content" id="pie-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Recent Transactions
+                </div>
+                <div class="panel-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    Title
+                                </th>
+                                <th>
+                                    Description
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var trans in Model.Transactions)
+                            {
+                                <tr>
+                                    <td style="padding:.25em">
+                                        @Html.DisplayFor(t => trans.Name)
+                                    </td>
+                                    <td style="padding:.25em">
+                                        @Html.DisplayFor(t => trans.Description)
+                                    </td>
+                                    <td style="padding:.25em">
+                                        $@Html.DisplayFor(t => trans.Value)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        var pie_data = [];
+        var bar_data = [];
+        @foreach(var bud in Model.Budgets)
+        {
+            @:pie_data.push({label: '@bud.Name',data: @bud.Spent});
+                            @:bar_data.push({name: '@bud.Name',amount:@bud.Value,spent:@bud.Spent});
+                        }
+
+        Morris.Bar({
+            element: 'bar-chart',
+            data: bar_data,
+            xkey: 'name',
+            ykeys: ['amount', 'spent'],
+            labels: ['Budgeted Amount', 'Amount Spent'],
+            hideHover: 'auto',
+            barColors:['#5cb85c','#d9534f'],
+            resize: true
+        });
+
+        var plotObj = $.plot($("#pie-chart"), pie_data, {
+            series: {
+                pie: {
+                    show: true
+                }
+            },
+            grid: {
+                hoverable: true
+            },
+            tooltip: true,
+            tooltipOpts: {
+                content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
+                shifts: {
+                    x: 20,
+                    y: 0
+                },
+                defaultTheme: true
+            }
+        });
+    </script>
 }

@@ -244,15 +244,6 @@ $(document).ready(function () {
         enableCaseInsensitiveFiltering: true
     });
 
-    $("#transactions").DataTable({
-        dom: 'Blfrtip',
-        buttons: [
-            'colvis'
-        ],
-        "order": [[4, "desc"]],
-        responsive: true
-    });
-
     if (top.location.pathname === '/Home/Index') {
         $("#side-menu li").removeClass("selected");
         $("#home-nav").addClass("selected");
