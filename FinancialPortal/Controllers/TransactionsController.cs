@@ -19,6 +19,7 @@ namespace FinancialPortal.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         private BankHelpers bh = new BankHelpers();
         private HouseholdHelper hh = new HouseholdHelper();
+        private BudgetHelpers bdh = new BudgetHelpers();
 
         // GET: Transactions
         public ActionResult Index()
@@ -205,8 +206,31 @@ namespace FinancialPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id, int? bankId)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             Transaction transaction = db.Transactions.Find(id);
             transaction.Void = true;
+
+            //Update Spent totals
+            foreach (var budge in user.Household.Budgets)
+            {
+                budge.Spent = bdh.SpentBudget(budge);
+                db.Entry(budge).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            //Calculate New Bank Totals
+            var bank1 = db.Banks.Find(transaction.BankId);
+            bank1.Balance = bh.TotalAllTrans(bank1);
+
+            db.Entry(bank1).State = EntityState.Modified;
+
+            //Update Household Total
+            var household = bank1.Household;
+            household.Balance = hh.HouseholdBalance(household);
+
+            db.Entry(household).State = EntityState.Modified;
+
+
             db.SaveChanges();
             if(bankId != null)
             {
@@ -236,8 +260,30 @@ namespace FinancialPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Voided(int id)
         {
+            var user = db.Users.Find(User.Identity.GetUserId());
             Transaction transaction = db.Transactions.Find(id);
             transaction.Void = false;
+
+            //Update Spent totals
+            foreach (var budge in user.Household.Budgets)
+            {
+                budge.Spent = bdh.SpentBudget(budge);
+                db.Entry(budge).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            //Calculate New Bank Totals
+            var bank1 = db.Banks.Find(transaction.BankId);
+            bank1.Balance = bh.TotalAllTrans(bank1);
+
+            db.Entry(bank1).State = EntityState.Modified;
+
+            //Update Household Total
+            var household = bank1.Household;
+            household.Balance = hh.HouseholdBalance(household);
+
+            db.Entry(household).State = EntityState.Modified;
+
             db.SaveChanges();
             return RedirectToAction("Voided", "Transactions");
         }
