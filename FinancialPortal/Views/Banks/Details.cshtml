@@ -18,7 +18,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-5">
             <h2>@Model.Bank.Name</h2>
         </div>
         <div class="col-lg-2">
@@ -32,12 +32,25 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-11 col-lg-offset-1">
-            <h6>@Model.Bank.Description</h6>
+        <div class="col-lg-5 col-lg-offset-1">
+            <h6>@Model.Bank.Description</h6>            
+        </div>
+        <div class="col-lg-2">
+            <h6>Balance</h6>
+        </div>
+        <div class="col-lg-2">
+            @if (Model.Bank.ReconciledBalance != null)
+            {
+                <h6>Reconciled Balance</h6>
+            }
+        </div>
+        <div class="col-lg-2">
+            <p class="pull-right">Created:</p>
             <p class="pull-right" id="created_date"></p>
             @if (Model.Bank.Updated != null)
             {
-                <p class="pull-right" id="udated_date"></p>
+                <p class="pull-right">Updated:</p>
+                <p class="pull-right" id="updated_date"></p>
             }
         </div>
     </div>
@@ -51,109 +64,140 @@
             <h3>Transactions</h3>
         </div>
         <div class="panel-body">
-            <div class="col-lg-12">
-                <table class="table" id="bank_transactions" width="100%">
-                    <thead>
-                        <tr>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Name)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Description)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Value)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Created)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Updated)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Submitter)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Editor)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Category.Name)
-                            </th>
-                            <th>
-                                @Html.DisplayNameFor(model => model.Bank.Transactions.First().Type.Name)
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int num = 0;
-                            foreach (var item in Model.Bank.Transactions.Where(t => t.Void == false))
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Description)
-                                    </td>
-                                    <td>
-                                        @if (!item.Expense)
-                                        {
-                                            <span class="text-success heavy">
-                                                @if (item.Reconciled)
-                                                {
-                                                    @:+$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Minimum Date</label>
+                            <input placeholder="Minimum Date" id="BDateMin" name="BDateMin" type="date" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Maximum Date</label>
+                            <input placeholder="Maximum Date" id="BDateMax" name="BDateMax" type="date" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 pull-right">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input class="pull-right" placeholder="Maximum Amount" id="BAmountMax" name="BAmountMax" type="number" />
+                            <input class="pull-right" placeholder="Minimum Amount" id="BAmountMin" name="BAmountMin" type="number" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            Search ** for reconciled transactions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <table class="table" id="bank_transactions" width="100%">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Description)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Value)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Created)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Updated)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Submitter)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Editor)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Category.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.Bank.Transactions.First().Type.Name)
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int num = 0;
+                                foreach (var item in Model.Bank.Transactions.Where(t => t.Void == false))
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                        <td>
+                                            @if (!item.Expense)
+                                            {
+                                                <span class="text-success heavy">
+                                                    @if (item.Reconciled)
+                                                    {
+                                                        @:+$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
                                             }
-                                                else
-                                                {
-                                                    @Html.Raw("+$" + item.Value)
-                                                }
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-danger heavy" title="Expense">
-                                                @if (item.Reconciled)
-                                                {
-                                                    @:-$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                                    else
+                                                    {
+                                                        @Html.Raw("+$" + item.Value)
+                                                    }
+                                                </span>
                                             }
-                                                else
-                                                {
-                                                    @Html.Raw("-$" + item.Value)
-                                                }
-                                            </span>
-                                        }
+                                            else
+                                            {
+                                                <span class="text-danger heavy" title="Expense">
+                                                    @if (item.Reconciled)
+                                                    {
+                                                        @:-$@item.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                            }
+                                                    else
+                                                    {
+                                                        @Html.Raw("-$" + item.Value)
+                                                    }
+                                                </span>
+                                            }
 
-                                    </td>
-                                    <td id="transaction_create_@num"></td>
-                                    <td id="transaction_update_@num"></td>
-                                    <td>
-                                        @Html.Raw(DisplayHelpers.FirstName(item.Submitter) + " " + DisplayHelpers.LastName(item.Submitter))
-                                    </td>
-                                    <td>
-                                        @if (item.Editor != null)
-                                        {
-                                            @Html.Raw(DisplayHelpers.FirstName(item.Editor) + " " + DisplayHelpers.LastName(item.Editor))
-                                        }
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Category.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Type.Name)
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-info btn-circle" id="edit_trans_@num" title="Edit Transaction"><i class="fa fa-edit"></i></button>
-                                        <button type="button" class="btn btn-danger btn-circle" id="delete_trans_@num" title="Delete Transaction"><i class="fa fa-close"></i></button>
-                                    </td>
-                                </tr>
-                                num++;
+                                        </td>
+                                        <td id="transaction_create_@num"></td>
+                                        <td id="transaction_update_@num"></td>
+                                        <td>
+                                            @Html.Raw(DisplayHelpers.FirstName(item.Submitter) + " " + DisplayHelpers.LastName(item.Submitter))
+                                        </td>
+                                        <td>
+                                            @if (item.Editor != null)
+                                            {
+                                                @Html.Raw(DisplayHelpers.FirstName(item.Editor) + " " + DisplayHelpers.LastName(item.Editor))
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Category.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Type.Name)
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-circle" id="edit_trans_@num" title="Edit Transaction"><i class="fa fa-edit"></i></button>
+                                            <button type="button" class="btn btn-danger btn-circle" id="delete_trans_@num" title="Delete Transaction"><i class="fa fa-close"></i></button>
+                                        </td>
+                                    </tr>
+                                    num++;
+                                }
                             }
-                        }
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -408,8 +452,18 @@
                     count++;
                 }
             }
+
+            @if(Model.Bank.Updated != null)
+            {
+                @:bankDate2('@Model.Bank.Created.ToUniversalTime().ToString()', '@Model.Bank.Updated.Value.ToUniversalTime().ToString()');
+            }
+            else
+            {
+                @:bankDate('@Model.Bank.Created.ToUniversalTime().ToString()');
+            }
+
             $.fn.dataTable.moment( 'D/M/YYYY h:mm:ss a' );
-            $("#bank_transactions").DataTable({
+            var table = $("#bank_transactions").DataTable({
                 dom: 'Blfrtip',
                 buttons: [
                     'colvis'
@@ -417,6 +471,46 @@
                 "order": [[3, "desc"]],
                 responsive: true
             });
+
+            //Amount Range Search Bank Details
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#BAmountMin').val(), 10);
+                    var max = parseInt($('#BAmountMax').val(), 10);
+                    var amount = parseFloat(data[2]) || 0; // use data for the age column
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                         (isNaN(min) && amount <= max) ||
+                         (min <= amount && isNaN(max)) ||
+                         (min <= amount && amount <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            //Date Range Search
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = moment($('#BDateMin').val()).dayOfYear() + (365.25 * moment($('#BDateMin').val()).year());
+                    var max = moment($('#BDateMax').val()).dayOfYear() + (365.25 * moment($('#BDateMax').val()).year());
+                    var date = moment(data[3]).dayOfYear() + (365.25 * moment(data[3]).year()) || 0; // use data for the age column
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                         (isNaN(min) && date <= max) ||
+                         (min <= date && isNaN(max)) ||
+                         (min <= date && date <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            $('#BAmountMin, #BAmountMax').keyup( function() {
+                table.draw();
+            } );
+
+            $('#BDateMin, #BDateMax').change(function() {
+                table.draw();
+            } );
 
             $("#edit_transaction_reconciled").change(function () {
                 if ($(this).is(":checked")) {

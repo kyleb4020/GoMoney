@@ -17,7 +17,26 @@ namespace FinancialPortal.Helpers
                     bank.BankType.Name == "Checking Account" ||
                     bank.BankType.Name == "Retirement Account")
             {
-                balance = (bank.Transactions.Where(t=>!t.Void).Where(t=>!t.Reconciled).Where(t => !t.Expense).Sum(t => t.Value) +
+                balance = bank.Transactions.Where(t=>!t.Void).Where(t => !t.Expense).Sum(t => t.Value) -
+                    bank.Transactions.Where(t => !t.Void).Where(t => t.Expense).Sum(t => t.Value);
+            }
+            else if (bank.BankType.Name == "Credit Card" ||
+                bank.BankType.Name == "Loan")
+            {
+                balance = bank.Transactions.Where(t => !t.Void).Where(t => t.Expense).Sum(t => t.Value)-
+                    bank.Transactions.Where(t => !t.Void).Where(t => !t.Expense).Sum(t => t.Value);
+            }
+                return balance;
+        }
+
+        public double TotalAllReconciledTrans(Bank bank)
+        {
+            double balance = 0;
+            if (bank.BankType.Name == "Savings Account" ||
+                    bank.BankType.Name == "Checking Account" ||
+                    bank.BankType.Name == "Retirement Account")
+            {
+                balance = (bank.Transactions.Where(t => !t.Void).Where(t => !t.Reconciled).Where(t => !t.Expense).Sum(t => t.Value) +
                     bank.Transactions.Where(t => !t.Void).Where(t => t.Reconciled).Where(t => !t.Expense).Sum(t => t.ReconciledValue)) -
                     (bank.Transactions.Where(t => !t.Void).Where(t => !t.Reconciled).Where(t => t.Expense).Sum(t => t.Value) +
                     bank.Transactions.Where(t => !t.Void).Where(t => t.Reconciled).Where(t => !t.Expense).Sum(t => t.ReconciledValue));
@@ -26,11 +45,11 @@ namespace FinancialPortal.Helpers
                 bank.BankType.Name == "Loan")
             {
                 balance = (bank.Transactions.Where(t => !t.Void).Where(t => !t.Reconciled).Where(t => t.Expense).Sum(t => t.Value) +
-                    bank.Transactions.Where(t => !t.Void).Where(t => t.Reconciled).Where(t => t.Expense).Sum(t => t.ReconciledValue))-
+                    bank.Transactions.Where(t => !t.Void).Where(t => t.Reconciled).Where(t => t.Expense).Sum(t => t.ReconciledValue)) -
                     (bank.Transactions.Where(t => !t.Void).Where(t => !t.Reconciled).Where(t => !t.Expense).Sum(t => t.Value) +
                     bank.Transactions.Where(t => !t.Void).Where(t => t.Reconciled).Where(t => !t.Expense).Sum(t => t.ReconciledValue));
             }
-                return balance;
+            return balance;
         }
 
         public double NewBankTotal(Bank bank, Transaction transaction)

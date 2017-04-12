@@ -171,6 +171,15 @@ namespace FinancialPortal.Controllers
                 var bank1 = db.Banks.Find(Trans.BankId);
                 bank1.Balance = bh.TotalAllTrans(bank1);
 
+                if (bank1.Transactions.Any(t=>t.Reconciled))
+                {
+                    bank1.ReconciledBalance = bh.TotalAllReconciledTrans(bank1);
+                }
+                else
+                {
+                    bank1.ReconciledBalance = null;
+                }
+
                 db.Entry(bank1).State = EntityState.Modified;
 
                 //Update Household Total

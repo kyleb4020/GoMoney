@@ -23,6 +23,30 @@
         </div>
         <div class="panel-body">
             <div class="row">
+                <div class="col-lg-4">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Minimum Date</label>
+                            <input placeholder="Minimum Date" id="DateMin" name="DateMin" type="date" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Maximum Date</label>
+                            <input placeholder="Maximum Date" id="DateMax" name="DateMax" type="date" />
+                        </div>
+                    </div>
+                    </div>
+                <div class="col-lg-6 pull-right">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input class="pull-right" placeholder="Maximum Amount" id="AmountMax" name="AmountMax" type="number" />
+                            <input class="pull-right" placeholder="Minimum Amount" id="AmountMin" name="AmountMin" type="number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12">
                     <table class="table" id="transactions" width="100%">
                         <thead>
@@ -389,7 +413,7 @@
                 }
             }            
             $.fn.dataTable.moment( 'D/M/YYYY h:mm:ss a' );
-            $("#transactions").DataTable({
+            var table = $("#transactions").DataTable({
                 dom: 'Blfrtip',
                 buttons: [
                     'colvis'
@@ -397,6 +421,46 @@
                 "order": [[4, "desc"]],
                 responsive: true
             });
+            //Amount Range Search
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#AmountMin').val(), 10);
+                    var max = parseInt($('#AmountMax').val(), 10);
+                    var amount = parseFloat(data[3].match(/(\d+)/)) || 0; // use data for the age column
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                         (isNaN(min) && amount <= max) ||
+                         (min <= amount && isNaN(max)) ||
+                         (min <= amount && amount <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            //Date Range Search
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = moment($('#DateMin').val()).dayOfYear() + (365.25 * moment($('#DateMin').val()).year());
+                    var max = moment($('#DateMax').val()).dayOfYear() + (365.25 * moment($('#DateMax').val()).year());
+                    var date = moment(data[4]).dayOfYear() + (365.25 * moment(data[4]).year()) || 0; // use data for the age column
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                         (isNaN(min) && date <= max) ||
+                         (min <= date && isNaN(max)) ||
+                         (min <= date && date <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            // Event listener to the two range filtering inputs to redraw on input
+            $('#AmountMin, #AmountMax').keyup( function() {
+                table.draw();
+            } );
+
+            $('#DateMin, #DateMax').change(function() {
+                table.draw();
+            } );
 
             $("#edit_transaction_reconciled").change(function () {
                 if ($(this).is(":checked")) {

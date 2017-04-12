@@ -24,6 +24,17 @@
     return (correctTime)
 }
 
+function bankDate2(created, updated) {
+    var time1 = getUserTime(created);
+    $("#created_date").append(time1);
+    var time2 = getUserTime(updated);
+    $("#updated_date").append(time2);
+}
+function bankDate(created) {
+    var time1 = getUserTime(created);
+    $("#created_date").append(time1);
+}
+
 function transDate2(count, created, updated) {
     var time1 = getUserTime(created);
     $("#transaction_create_" + count).append(time1);
@@ -232,6 +243,7 @@ function spendColor(value, spent, count) {
         $("#spent_" + count).addClass("progress-bar-danger");
     }
 }
+
 
 $(document).ready(function () {
     $("#CategoryId").multiselect({
