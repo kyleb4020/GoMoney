@@ -46,7 +46,32 @@ namespace FinancialPortal.ViewModels
 
     public class DashboardVM
     {
-        public ICollection<Budget> Budgets { get; set; }
+        //public ICollection<Budget> Budgets { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
+        public Month Month { get; set; }
+        //public ICollection<Bank> Banks { get; set; }
+        //public string DashBudgets { get; set; }
+        //public string DashSpent { get; set; }
+        //public string DashAccounts { get; set; }
+    }
+
+    public class DashBudgetsVM
+    {
+        public string Name { get; set; }
+        public double Amount { get; set; }
+        public double Spent { get; set; }
+    }
+
+    public class DashAccountsVM
+    {
+        public string Name { get; set; }
+        public double Amount { get; set; }
+        public double? Reconciled { get; set; }
+    }
+
+    public class DashSpentVM
+    {
+        public string label { get; set; }
+        public double data { get; set; }
     }
 }

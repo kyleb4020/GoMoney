@@ -42,6 +42,11 @@
                             <input class="pull-right" placeholder="Minimum Amount" id="AmountMin" name="AmountMin" type="number" />
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-12 text-right">
+                            Search ** for reconciled transactions.
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -336,7 +341,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#AmountMin').val(), 10);
                 var max = parseInt($('#AmountMax').val(), 10);
-                var amount = parseFloat(data[3].match(/(\d+)/)) || 0; // use data for the age column
+                var amount = parseFloat(data[3].match(/(\d+\.?\d+)/)) || 0; // use data for the age column
 
                 if ((isNaN(min) && isNaN(max)) ||
                      (isNaN(min) && amount <= max) ||

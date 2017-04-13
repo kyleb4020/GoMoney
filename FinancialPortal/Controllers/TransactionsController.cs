@@ -13,6 +13,7 @@ using FinancialPortal.ViewModels;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class TransactionsController : Controller
     {
@@ -116,6 +117,10 @@ namespace FinancialPortal.Controllers
                 db.Entry(household).State = EntityState.Modified;
 
                 db.SaveChanges();
+                if (Request.IsAjaxRequest())
+                {
+                    return PartialView("_NewRow", transaction);
+                }
                 return RedirectToAction("Details","Banks",new { id = transaction.BankId});
             }
 
@@ -142,6 +147,19 @@ namespace FinancialPortal.Controllers
         //    ViewBag.TypeId = new SelectList(db.TransTypes, "Id", "Name", transaction.TypeId);
         //    return View(transaction);
         //}
+
+        //GET: Transactions/_EditModal/5
+        public ActionResult _EditModal(int id)
+        {
+            Transaction transaction = db.Transactions.Find(id);
+            if (transaction == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.EditCategoryId = new SelectList(db.Categories, "Id", "Name",transaction.CategoryId);
+            ViewBag.EditTypeId = new SelectList(db.TransTypes, "Id", "Name", transaction.TypeId);
+            return PartialView("_EditModal", transaction);
+        }
 
         // POST: Transactions/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -189,6 +207,10 @@ namespace FinancialPortal.Controllers
                 db.Entry(household).State = EntityState.Modified;
 
                 db.SaveChanges();
+                if (Request.IsAjaxRequest())
+                {
+                    return PartialView("_EditRow", Trans);
+                }
                 return RedirectToAction("Details", "Banks", new { id = bank1.Id });
             }
 

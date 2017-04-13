@@ -58,11 +58,11 @@ namespace FinancialPortal
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "705776805678-jbdrkder5a5nbb451q2p699n1gao5vbb.apps.googleusercontent.com",
-            //    ClientSecret = "gQdhJnvty1-r3IF6Mff-npE2"
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "592035937313-oo9d9mn56etf6ucnsbslipknh7t12ion.apps.googleusercontent.com",
+                ClientSecret = "QiUiuYr1m96vMxBDmSKydmrV"
+            });
         }
     }
 }

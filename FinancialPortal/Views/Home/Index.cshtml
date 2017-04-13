@@ -9,9 +9,22 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Budget Spending
+                    @Html.DropDownList("BudgetMonths", null, new { @class = "pull-right" })
                 </div>
                 <div class="panel-body">
-                    <div id="bar-chart"></div>
+                    <div id="budget-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Current Balances
+                </div>
+                <div class="panel-body">
+                    <div id="account-chart"></div>
                 </div>
             </div>
         </div>
@@ -21,6 +34,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Total Spending by Budget Category
+                    @Html.DropDownList("SpendingMonths",null,new { @class="pull-right"})
                 </div>
                 <div class="panel-body">
                     <div class="flot-chart">
@@ -78,43 +92,86 @@
 <script src="~/Scripts/jquery.flot.resize.js"></script>
 <script src="~/Scripts/jquery.flot.tooltip.min.js"></script>    
     <script type="text/javascript">
-        var pie_data = [];
-        var bar_data = [];
-        @foreach(var bud in Model.Budgets)
+        @*var pie_data = @Html.Raw(Model.DashSpent);
+        var budget_data = @Html.Raw(Model.DashBudgets);
+        var account_data = @Html.Raw(Model.DashAccounts);*@
+        @*@foreach(var bud in Model.Budgets)
         {
             @:pie_data.push({label: '@bud.Name',data: @bud.Spent});
-                            @:bar_data.push({name: '@bud.Name',amount:@bud.Value,spent:@bud.Spent});
-                        }
-
-        Morris.Bar({
-            element: 'bar-chart',
-            data: bar_data,
-            xkey: 'name',
-            ykeys: ['amount', 'spent'],
-            labels: ['Budgeted Amount', 'Amount Spent'],
-            hideHover: 'auto',
-            barColors:['#5cb85c','#d9534f'],
-            resize: true
-        });
-
-        var plotObj = $.plot($("#pie-chart"), pie_data, {
-            series: {
-                pie: {
-                    show: true
+                    @:budget_data.push({name: '@bud.Name',amount:@bud.Value,spent:@bud.Spent});
                 }
-            },
-            grid: {
-                hoverable: true
-            },
-            tooltip: true,
-            tooltipOpts: {
-                content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
-                shifts: {
-                    x: 20,
-                    y: 0
-                },
-                defaultTheme: true
+        @foreach(var bank in Model.Banks)
+        {
+            if(bank.ReconciledBalance != null)
+            {
+                @:account_data.push({name: '@bank.Name', amount:@bank.Balance, reconciled:@bank.ReconciledBalance});
             }
-        });
+            else
+            {
+                @:account_data.push({name: '@bank.Name', amount:@bank.Balance});
+            }
+        }*@
+        function refreshBudgets(month){
+            $.get("/Home/GetBudgetsData/", { month:month },function(data){
+                Morris.Bar({
+                    element: 'budget-chart',
+                    data: data,
+                    xkey: 'Name',
+                    ykeys: ['Amount', 'Spent'],
+                    labels: ['Budgeted Amount', 'Amount Spent'],
+                    hideHover: 'auto',
+                    barColors:['#5cb85c','#d9534f'],
+                    resize: true
+                });
+            })
+        }
+
+        function refreshAccounts() {
+            $.get("/Home/GetAccountsData/", function (data) {
+                Morris.Bar({
+                    element: 'account-chart',
+                    data: data,
+                    xkey: 'Name',
+                    ykeys: ['Amount', 'Reconciled'],
+                    labels: ['Balance', 'Reconciled Balance'],
+                    hideHover: 'auto',
+                    resize: true
+                });
+            })
+        }
+        
+        function refreshSpending(month) {
+            $.get("/Home/GetSpendingData/", { month: month }, function (data) {
+                var plotObj = $.plot($("#pie-chart"), data, {
+                    series: {
+                        pie: {
+                            show: true
+                        }
+                    },
+                    grid: {
+                        hoverable: true
+                    },
+                    tooltip: true,
+                    tooltipOpts: {
+                        content: "%p.0%, %s", // show percentages, rounding to 2 decimal places
+                        shifts: {
+                            x: 20,
+                            y: 0
+                        },
+                        defaultTheme: true
+                    }
+                });
+            })
+        }
+        refreshAccounts();
+        refreshBudgets(@Model.Month.Id);
+        refreshSpending(@Model.Month.Id);
+        $("#BudgetMonths").change(function () {
+            $("#budget-chart").empty()
+            refreshBudgets($("#BudgetMonths").val());
+        })
+        $("#SpendingMonths").change(function () {
+            refreshSpending($("#SpendingMonths").val());
+        })
     </script>
 }

@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class BanksController : Controller
     {

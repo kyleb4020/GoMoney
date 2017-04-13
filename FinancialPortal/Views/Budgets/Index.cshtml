@@ -24,125 +24,127 @@
                             }
                         }
                     </ul>
-                    @foreach (var month in Model.Months)
-                    {
-                        <div class="tab-pane fade in active" id="month_@month.Id">
-                            <div class="row">
-                                <div class="col-lg-3 pull-right">
-                                    <div class="well-sm">
-                                        @if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > 5)
-                                        {
-                                            <h5>Total Budget Remaining:</h5><h3><span class="text-success">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
-                                        }
-                                        else if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) <= 5 && (month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > -5)
-                                        {
-                                            <h5>Total Budget Remaining:</h5><h3><span class="text-info">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
-                                        }
-                                        else
-                                        {
-                                            <h5>Total Budget Remaining:</h5><h3><span class="text-danger">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
-                                        }
+                    <div class="tab-content">
+                        @foreach (var month in Model.Months)
+                        {
+                            <div class="tab-pane fade" id="month_@month.Id">
+                                <div class="row">
+                                    <div class="col-lg-3 pull-right">
+                                        <div class="well-sm">
+                                            @if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > 5)
+                                            {
+                                                <h5>Total Budget Remaining:</h5><h3><span class="text-success">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                            }
+                                            else if ((month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) <= 5 && (month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value)) > -5)
+                                            {
+                                                <h5>Total Budget Remaining:</h5><h3><span class="text-info">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                            }
+                                            else
+                                            {
+                                                <h5>Total Budget Remaining:</h5><h3><span class="text-danger">$@(month.Budgets.Where(b => !b.Expense).Sum(b => b.Value) - month.Budgets.Where(b => b.Expense).Sum(b => b.Value))</span></h3>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 pull-right">
+                                        <div class="well-sm">
+                                            <h5>Total Expected Expenses:</h5><h3><span class="text-danger">-$@month.Budgets.Where(b => b.Expense).Sum(b => b.Value)</span></h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 pull-right">
+                                        <div class="well-sm">
+                                            <h5>Total Expected Income:</h5><h3><span class="text-success">+$@month.Budgets.Where(b => !b.Expense).Sum(b => b.Value)</span></h3>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 pull-right">
-                                    <div class="well-sm">
-                                        <h5>Total Expected Expenses:</h5><h3><span class="text-danger">-$@month.Budgets.Where(b => b.Expense).Sum(b => b.Value)</span></h3>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 pull-right">
-                                    <div class="well-sm">
-                                        <h5>Total Expected Income:</h5><h3><span class="text-success">+$@month.Budgets.Where(b => !b.Expense).Sum(b => b.Value)</span></h3>
-                                    </div>
-                                </div>                             
-                            </div>
-                            <div class="panel-group" id="accordion">
-                                @{
-                                    var num = 0;
-                                    foreach (var item in month.Budgets)
-                                    {
-                                        <div class="panel panel-default" id="panel_type">
-                                            <div class="panel-heading">
-                                                <h4 class="panel-title pull-right">
-                                                    Expected Amount: $@item.Value
-                                                </h4>
-                                                <h4 class="panel-title">
-                                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@item.Id">@item.Name</a>
-                                                </h4>
-                                            </div>
-                                            <div id="collapse_@item.Id" class="panel-collapse collapse in">
-                                                <div class="panel-body">
-                                                    @if (item.Expense)
-                                                    {                                                        
-                                                        <div>
-                                                            <p>                                                                
-                                                                <span class="pull-right">
-                                                                    <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="Budget Details"><i class="fa fa-info"></i></a>
-                                                                    <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
-                                                                    <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
-                                                                </span>
-                                                                <span class="text-muted">Amount Spent: $@item.Spent</span>
-                                                                <br /><span class="text-muted">Remaining: $@(item.Value - item.Spent)</span>
-                                                            </p>
-                                                            <div class="progress progress-striped active" style="margin-top:1em;">
-                                                                <div id="spent_@item.Id" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@item.Spent" aria-valuemin="0" aria-valuemax="@item.Value" style="width: @(100*(item.Spent/item.Value))%">
-                                                                    <span class="sr-only"></span>
-                                                                </div>
-                                                            </div>
+                                <div class="panel-group" id="accordion">
+                                    @{
+                                        var num = 0;
+                                        foreach (var item in month.Budgets)
+                                        {
+                                            <div class="panel panel-default" id="panel_type">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title pull-right">
+                                                        Expected Amount: $@item.Value
+                                                    </h4>
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_@item.Id">@item.Name</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse_@item.Id" class="panel-collapse collapse in">
+                                                    <div class="panel-body">
+                                                        @if (item.Expense)
+                                                        {
                                                             <div>
-                                                                <button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#categories_@item.Id">Categories</button>
-                                                                <div id="categories_@item.Id" class="collapse">
-                                                                    <ul>
-                                                                        @foreach (var cats in item.Categories)
-                                                                        {
-                                                                            <li>
-                                                                                @Html.Raw(cats.Name)
-                                                                            </li>
-                                                                        }
-                                                                    </ul>
+                                                                <p>
+                                                                    <span class="pull-right">
+                                                                        <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="Budget Details"><i class="fa fa-info"></i></a>
+                                                                        <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
+                                                                        <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
+                                                                    </span>
+                                                                    <span class="text-muted">Amount Spent: $@item.Spent</span>
+                                                                    <br /><span class="text-muted">Remaining: $@(item.Value - item.Spent)</span>
+                                                                </p>
+                                                                <div class="progress progress-striped active" style="margin-top:1em;">
+                                                                    <div id="spent_@item.Id" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@item.Spent" aria-valuemin="0" aria-valuemax="@item.Value" style="width: @(100*(item.Spent/item.Value))%">
+                                                                        <span class="sr-only"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#categories_@item.Id">Categories</button>
+                                                                    <div id="categories_@item.Id" class="collapse">
+                                                                        <ul>
+                                                                            @foreach (var cats in item.Categories)
+                                                                            {
+                                                                                <li>
+                                                                                    @Html.Raw(cats.Name)
+                                                                                </li>
+                                                                            }
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <div>
-                                                            <p>
-                                                                <span class="pull-right">
-                                                                    <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="View Details and Transactions"><i class="fa fa-info"></i></a>
-                                                                    <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
-                                                                    <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
-                                                                </span>
-                                                                <span class="text-muted">Amount Earned: $@item.Spent</span>
-                                                            </p>
-                                                            <div class="progress progress-striped active" style="margin-top:1em;">
-                                                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@item.Spent" aria-valuemin="0" aria-valuemax="@item.Value" style="width: @(100*(item.Spent/item.Value))%">
-                                                                    <span class="sr-only"></span>
-                                                                </div>
-                                                            </div>
+                                                        }
+                                                        else
+                                                        {
                                                             <div>
-                                                                <button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#categories_@item.Id">Categories</button>
-                                                                <div id="categories_@item.Id" class="collapse">
-                                                                    <ul>
-                                                                        @foreach (var cats in item.Categories)
-                                                                        {
-                                                                            <li>
-                                                                                @Html.Raw(cats.Name)
-                                                                            </li>
-                                                                        }
-                                                                    </ul>
+                                                                <p>
+                                                                    <span class="pull-right">
+                                                                        <a href="/Budgets/Details/@item.Id" class="btn btn-primary btn-circle" title="View Details and Transactions"><i class="fa fa-info"></i></a>
+                                                                        <button type="button" class="btn btn-info btn-circle" id="edit_budget_@num" title="Edit Budget"><i class="fa fa-edit"></i></button>
+                                                                        <button type="button" class="btn btn-danger btn-circle" id="delete_budget_@num" title="Delete Budget"><i class="fa fa-close"></i></button>
+                                                                    </span>
+                                                                    <span class="text-muted">Amount Earned: $@item.Spent</span>
+                                                                </p>
+                                                                <div class="progress progress-striped active" style="margin-top:1em;">
+                                                                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="@item.Spent" aria-valuemin="0" aria-valuemax="@item.Value" style="width: @(100*(item.Spent/item.Value))%">
+                                                                        <span class="sr-only"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <button class="btn btn-info btn-sm" data-toggle="collapse" data-target="#categories_@item.Id">Categories</button>
+                                                                    <div id="categories_@item.Id" class="collapse">
+                                                                        <ul>
+                                                                            @foreach (var cats in item.Categories)
+                                                                            {
+                                                                                <li>
+                                                                                    @Html.Raw(cats.Name)
+                                                                                </li>
+                                                                            }
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    }
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        num++;
+                                            num++;
+                                        }
                                     }
-                                }
+                                </div>
                             </div>
-                        </div>
-                                    }
+                                        }
+                    </div>
                 </div>
             </div>
         </div>

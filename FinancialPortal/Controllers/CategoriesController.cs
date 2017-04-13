@@ -12,6 +12,7 @@ using FinancialPortal.ViewModels;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class CategoriesController : Controller
     {

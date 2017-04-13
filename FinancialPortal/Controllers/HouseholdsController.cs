@@ -18,6 +18,7 @@ using DevTrends.MvcDonutCaching;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class HouseholdsController : Controller
     {

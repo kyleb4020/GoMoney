@@ -14,6 +14,7 @@ using System.Data.Entity;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class AccountController : Controller
     {
@@ -381,7 +382,19 @@ namespace FinancialPortal.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                // To convert the user uploaded Photo as Byte Array before save to DB 
+                byte[] imageData = null;
+                if (Request.Files.Count > 0)
+                {
+                    HttpPostedFileBase poImgFile = Request.Files["UserPhoto"];
+
+                    using (var binary = new BinaryReader(poImgFile.InputStream))
+                    {
+                        imageData = binary.ReadBytes(poImgFile.ContentLength);
+                    }
+                }
+
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, DisplayName = model.DisplayName, ProfilePic = imageData };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

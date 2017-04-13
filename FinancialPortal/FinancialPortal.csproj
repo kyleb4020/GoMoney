@@ -18,7 +18,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44329</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -322,6 +322,8 @@
     <Content Include="Scripts\jquery.flot.tooltip.min.js" />
     <Content Include="Scripts\jquery.metisMenu.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -580,6 +582,9 @@
     <Content Include="Views\Households\_Banks.cshtml" />
     <Content Include="Views\Transactions\Voided.cshtml" />
     <Content Include="Views\Shared\_Categories.cshtml" />
+    <Content Include="Views\Transactions\_EditModal.cshtml" />
+    <Content Include="Views\Transactions\_EditRow.cshtml" />
+    <Content Include="Views\Transactions\_NewRow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -606,7 +611,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>53986</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:53986/</IISUrl>
+          <IISUrl>https://localhost:44329/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

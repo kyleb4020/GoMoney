@@ -11,7 +11,7 @@ using System.IO;
 
 namespace FinancialPortal.Controllers
 {
-    //[RequireHttps]
+    [RequireHttps]
     [Authorize]
     //[NoDirectAccess]
     public class ManageController : Controller

@@ -10,6 +10,7 @@ using FinancialPortal.Models;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     public class MonthsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

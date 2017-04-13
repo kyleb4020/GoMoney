@@ -1,0 +1,75 @@
+﻿@model FinancialPortal.Models.Transaction
+@using FinancialPortal.Helpers;
+<td>
+    @Html.DisplayFor(modelItem => Model.Bank.Name)
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.Name)
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.Description)
+</td>
+<td>
+    @if (!Model.Expense)
+    {
+        <span class="text-success heavy">
+            @if (Model.Reconciled)
+            {
+                @:+$@Model.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                        }
+            else
+            {
+                @Html.Raw("+$" + Model.Value)
+            }
+        </span>
+    }
+    else
+    {
+        <span class="text-danger heavy" title="Expense">
+            @if (Model.Reconciled)
+            {
+                @:-$@Model.ReconciledValue<span class="text-primary" title="Reconciled Value">**</span>
+                                        }
+            else
+            {
+                @Html.Raw("-$" + Model.Value)
+            }
+        </span>
+    }
+
+</td>
+<td id="transaction_create_@Model.Id"></td>
+<td id="transaction_update_@Model.Id"></td>
+<td>
+    @Html.Raw(DisplayHelpers.FirstName(Model.Submitter) + " " + DisplayHelpers.LastName(Model.Submitter))
+</td>
+<td>
+    @if (Model.Editor != null)
+    {
+        @Html.Raw(DisplayHelpers.FirstName(Model.Editor) + " " + DisplayHelpers.LastName(Model.Editor))
+    }
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.Category.Name)
+</td>
+<td>
+    @Html.DisplayFor(modelItem => Model.Type.Name)
+</td>
+<td>
+    <button type="button" class="btn btn-info btn-circle" id="edit_trans_@Model.Id" title="Edit Transaction"><i class="fa fa-edit"></i></button>
+    <button type="button" class="btn btn-danger btn-circle" id="delete_trans_@Model.Id" title="Delete Transaction"><i class="fa fa-close"></i></button>
+</td>
+
+
+
+<script src="~/Scripts/FinancialPortalJS.js"></script>
+<script>
+@if(Model.Updated != null)
+{
+    @:transDate2(@Model.Id,'@Model.Created.ToUniversalTime().ToString()', '@Model.Updated.Value.ToUniversalTime().ToString()');
+}
+else
+{
+    @:transDate(@Model.Id,'@Model.Created.ToUniversalTime().ToString()');
+}
+</script>

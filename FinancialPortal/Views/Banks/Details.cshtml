@@ -477,7 +477,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#BAmountMin').val(), 10);
                     var max = parseInt($('#BAmountMax').val(), 10);
-                    var amount = parseFloat(data[2]) || 0; // use data for the age column
+                    var amount = parseFloat(data[2].match(/(\d+\.?\d+)/)) || 0; // use data for the age column
 
                     if ((isNaN(min) && isNaN(max)) ||
                          (isNaN(min) && amount <= max) ||

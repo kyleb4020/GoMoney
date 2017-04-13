@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace FinancialPortal.Controllers
 {
+    [RequireHttps]
     [Authorize]
     public class HomeController : Controller
     {
@@ -24,30 +25,57 @@ namespace FinancialPortal.Controllers
             {
                 return RedirectToAction("Index", "Households");
             }
-            var budgets = db.Households.Find(user.Household.Id).Budgets.Where(b => b.Month.MonthNum == DateTime.Now.Month && b.Expense).ToList();
             var transactions = db.Households.Find(user.Household.Id).Banks.SelectMany(b => b.Transactions).Where(t=>t.Created > DateTime.Today.AddDays(-7)).OrderByDescending(t=>t.Created).ToList();
-            //string JSONbudgets = JsonConvert.SerializeObject(budgets);
-            //ViewBag.JSONbudgets = JSONbudgets;
+            
             DashboardVM VM = new DashboardVM();
-            VM.Budgets = budgets;
             VM.Transactions = transactions;
+            VM.Month = db.Households.Find(user.Household.Id).Months.FirstOrDefault(m=>m.MonthNum == DateTime.Now.Month && m.Year == DateTime.Now.Year);
+            var monthList = db.Households.Find(user.Household.Id).Months.ToList();
+            ViewBag.BudgetMonths = new SelectList(monthList, "Id", "Name", VM.Month.Id);
+            ViewBag.SpendingMonths = new SelectList(monthList, "Id", "Name", VM.Month.Id);
             return View(VM);
         }
 
-        //public ActionResult About()
-        //{
-        //    ViewBag.Message = "Your application description page.";
+        public ActionResult GetBudgetsData(int month)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var Month = db.Months.Find(month);
+            var data = db.Households.Find(user.Household.Id).Budgets.Where(b => b.Month.MonthNum == Month.MonthNum && b.Expense).ToList().Select(b => new
+            {
+                Name = b.Name,
+                Amount = b.Value,
+                Spent = b.Spent
+            });
 
-        //    return View();
-        //}
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
 
-        //public ActionResult Contact()
-        //{
-        //    ViewBag.Message = "Your contact page.";
+        public ActionResult GetAccountsData()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var data = db.Households.Find(user.Household.Id).Banks.ToList().Select(b=>new
+            {
+                Name = b.Name,
+                Amount = b.Balance,
+                Reconciled = b.ReconciledBalance
+            });
 
-        //    return View();
-        //}
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
 
+        public ActionResult GetSpendingData(int month)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var Month = db.Months.Find(month);
+            var data = db.Households.Find(user.Household.Id).Budgets.Where(b => b.Month.MonthNum == Month.MonthNum && b.Expense).ToList().Select(b=>new
+            {
+                label = b.Name,
+                data = b.Spent
+            });
+            
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+        
         public FileContentResult UserPhotos(string userId)
         {
             if (User.Identity.IsAuthenticated)
